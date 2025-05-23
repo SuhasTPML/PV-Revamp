@@ -38,9 +38,25 @@
             min-height: 60px;
         }
         .header-left { display: flex; align-items: center; gap: 1rem; flex-grow: 1; min-width: 0; }
-        .logo a { font-weight: bold; font-size: 1.8rem; color: var(--brand-dark); text-decoration: none; display: inline-block; white-space: nowrap; line-height: 1; }
-        .logo a:hover { text-decoration: none; }
-        
+        .logo a {
+    /* font-weight: bold; */
+    /* font-size: 1.8rem; */
+    /* color: var(--brand-dark); */
+    text-decoration: none;
+    display: inline-block;
+    /* line-height: 1; */
+}
+.logo a:hover {
+    text-decoration: none; /* Remains the same */
+} /* Closing brace for .logo a:hover */
+
+/* .logo img rule should be separate */
+.logo img {
+    display: block; 
+    height: 36px;   
+    width: auto;    
+    vertical-align: middle; 
+}
         .desktop-nav-links { display: none; flex-grow: 1; min-width: 0; }
         .desktop-nav-links > ul { display: flex; align-items: stretch; gap: 0.5rem; height: 100%; width: max-content; }
         .desktop-nav-links > ul > li { position: relative; display: flex; align-items: center; flex-shrink: 0; }
@@ -374,7 +390,11 @@
     <header class="site-header">
         <div class="header-container">
             <div class="header-left">
-                <div class="logo"><a href="#" id="mainLogoText">ಪ್ರಜಾವಾಣಿ</a></div>
+                <div class="logo">
+    <a href="#" id="mainLogoAnchor"> <!-- Changed ID for clarity, or you can remove it if not specifically targeted -->
+        <img src="pv logo.svg" alt="Prajavani Home" id="mainLogoImage">
+    </a>
+</div>
                 <nav class="desktop-nav-links" id="desktopNav"><ul id="desktopNavUl"></ul></nav>
             </div>
             <div class="header-right">
@@ -406,8 +426,10 @@
         <div class="overlay-menu-top-bar">
             <div class="header-left">
                 <div class="logo overlay-logo-main" id="overlayMenuTitleLogo">
-                    <a href="#" id="overlayLogoText">ಪ್ರಜಾವಾಣಿ</a>
-                </div>
+    <a href="#" id="overlayLogoAnchor"> <!-- Changed ID for clarity -->
+        <img src="pv logo.svg" alt="Prajavani Home" id="overlayLogoImage">
+    </a>
+</div>
             </div>
             <div class="header-right">
                 <nav class="main-nav overlay-actions-nav"> 
@@ -525,10 +547,7 @@
     let currentlyOpenL1ItemId = null; 
 
     const uiStrings = {
-        logoText: {
-            kn: "ಪ್ರಜಾವಾಣಿ",
-            en: "Prajavani"
-        },
+        
         searchPlaceholder: {
             kn: "ಪ್ರಜಾವಾಣಿಯಲ್ಲಿ ಹುಡುಕಿ...",
             en: "Search Prajavani..."
@@ -572,18 +591,20 @@
         return currentMenuLanguage === 'kn' ? item.kannadaTitle : item.title;
     }
 
-    function updateStaticUIText() {
-        const mainLogoTextElement = document.getElementById('mainLogoText');
-        const overlayLogoTextElement = document.getElementById('overlayLogoText');
-        const overlayHeaderSearchInput = document.querySelector('.overlay-header-search-input');
-        const mobileOverlaySearchInput = document.getElementById('overlaySearchInput');
+function updateStaticUIText() {
+    // const mainLogoTextElement = document.getElementById('mainLogoText'); // Old ID, no longer needed for image
+    // const overlayLogoTextElement = document.getElementById('overlayLogoText'); // Old ID, no longer needed for image
 
-        if (mainLogoTextElement) mainLogoTextElement.textContent = uiStrings.logoText[currentMenuLanguage];
-        if (overlayLogoTextElement) overlayLogoTextElement.textContent = uiStrings.logoText[currentMenuLanguage];
-        if (overlayHeaderSearchInput) overlayHeaderSearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
-        if (mobileOverlaySearchInput) mobileOverlaySearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
-    }
+    const overlayHeaderSearchInput = document.querySelector('.overlay-header-search-input');
+    const mobileOverlaySearchInput = document.getElementById('overlaySearchInput');
 
+    // Remove or comment out these lines:
+    // if (mainLogoTextElement) mainLogoTextElement.textContent = uiStrings.logoText[currentMenuLanguage];
+    // if (overlayLogoTextElement) overlayLogoTextElement.textContent = uiStrings.logoText[currentMenuLanguage];
+
+    if (overlayHeaderSearchInput) overlayHeaderSearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
+    if (mobileOverlaySearchInput) mobileOverlaySearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
+}
     // --- Featured Bar Population ---
     function populateFeaturedBars() {
         if (desktopFeaturedUl && desktopFeaturedLabel) {
