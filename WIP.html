@@ -29,7 +29,15 @@
     button { font-family: inherit; cursor: pointer; border: none; background: transparent; padding: 0; }
     ul { list-style: none; }
 
-    .site-header { background-color: var(--header-background); border-bottom: 1px solid var(--light-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .site-header { 
+        background-color: var(--header-background); 
+        border-bottom: 1px solid var(--light-border); 
+        position: sticky; 
+        top: 0; 
+        z-index: 1000; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
+        transition: transform 0.3s ease;
+    }
     
     .header-container { 
         display: flex; justify-content: space-between; align-items: center; 
@@ -99,7 +107,15 @@
     .epaper-main-header-button:hover { background-color: #e3aa00; }
     .hamburger-icon { font-size: 1.4rem; margin-left: 0.25rem; }
 
-    .mobile-menu-bar { background-color: var(--neutral-light); border-bottom: 1px solid var(--light-border); display: block; width: 100%; }
+    .mobile-menu-bar { 
+        background-color: var(--neutral-light); 
+        border-bottom: 1px solid var(--light-border); 
+        display: block; 
+        width: 100%; 
+        position: sticky;
+        top: 0;
+        z-index: 990;
+    }
     .menu-container { max-width: var(--container-max-width); margin: 0 auto; border-top: 1px solid var(--light-border); padding: 0 0.4rem; }
     .mobile-nav-links { width: 100%; overflow-x: auto; }
     .mobile-nav-links ul { display: flex; white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none; width: 100%; justify-content: space-between; }
@@ -344,6 +360,29 @@
         .overlay-menu-top-bar .logo img { height: 32px; } /* Tablet overlay logo size */
     }
     @media (max-width: 767.98px) { /* Mobile */
+        .site-header {
+            position: fixed;
+            width: 100%;
+            z-index: 1010;
+            top: 0;
+        }
+        .site-header.header-hidden {
+            transform: translateY(-100%);
+        }
+        .mobile-menu-bar {
+            top: 52px; /* Will be dynamically set by JS */
+            transition: top 0.3s ease;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+        .mobile-menu-bar.menu-at-top {
+            top: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        main {
+            padding-top: 48px; /* Height of the mobile menu */
+        }
         .featured-container {
             justify-content: flex-start; 
         }
@@ -974,7 +1013,141 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', initializeMenus);
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeMenus();
+        initMobileHeaderScroll();
+    });
+
+    // Mobile header scroll behavior
+    // Mobile header scroll behavior
+    function initMobileHeaderScroll() {
+        let lastScrollTop = 0;
+        const header = document.querySelector('.site-header');
+        const mobileMenuBar = document.querySelector('.mobile-menu-bar');
+        const mainContent = document.querySelector('main'); // Cache main element
+        const scrollThreshold = 5; // Minimum scroll amount to trigger header hide/show
+
+        if (!header || !mobileMenuBar || !mainContent) {
+            // console.warn("Header, mobile menu bar, or main content not found for scroll behavior.");
+            return;
+        }
+
+        // Function to adjust layout based on header visibility and screen size
+        function adjustLayoutForMobile() {
+            if (window.innerWidth >= 768) { // Desktop or tablet view
+                // Reset styles applied for mobile
+                header.classList.remove('header-hidden');
+                mobileMenuBar.classList.remove('menu-at-top');
+                mainContent.style.paddingTop = ''; 
+                mobileMenuBar.style.top = ''; 
+                // Ensure desktop sticky positioning works as intended (site-header top:0, mobile-menu-bar below it or as per desktop CSS)
+                // The mobile-menu-bar is display:none on desktop by default CSS, so this mostly cleans up.
+                return;
+            }
+
+            // --- Mobile view logic ---
+            const headerHeight = header.offsetHeight;
+            const mobileMenuHeight = mobileMenuBar.offsetHeight;
+
+            if (header.classList.contains('header-hidden')) {
+                // Header is hidden, menu bar should be at the very top of the viewport
+                mobileMenuBar.style.top = '0px';
+                mainContent.style.paddingTop = mobileMenuHeight + 'px';
+            } else {
+                // Header is visible, menu bar is below the header
+                mobileMenuBar.style.top = headerHeight + 'px';
+                mainContent.style.paddingTop = (headerHeight + mobileMenuHeight) + 'px';
+            }
+        }
+
+        function handleScroll() {
+            // Only apply scroll effects on mobile
+            if (window.innerWidth >= 768) {
+                // If we were previously in a mobile scrolled state, ensure layout is reset
+                if (header.classList.contains('header-hidden') || mobileMenuBar.classList.contains('menu-at-top')) {
+                     adjustLayoutForMobile(); // This will reset to desktop styles
+                }
+                return;
+            }
+
+            const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
+            const headerHeight = header.offsetHeight; // Get current header height for comparison
+
+            // If scrolling up and very close to top, or at the top, always show header
+            if (currentScrollTop < lastScrollTop && currentScrollTop < headerHeight) {
+                if (header.classList.contains('header-hidden')) {
+                    header.classList.remove('header-hidden');
+                    mobileMenuBar.classList.remove('menu-at-top');
+                    adjustLayoutForMobile();
+                }
+            } 
+            // Check scroll threshold only if not at the very top or scrolling up towards it
+            else if (Math.abs(lastScrollTop - currentScrollTop) < scrollThreshold) {
+                 // If we are at the very top (currentScrollTop === 0), allow logic to proceed to ensure header is visible
+                if (currentScrollTop !== 0) return;
+            }
+
+            // Scrolling down and past the header height
+            if (currentScrollTop > lastScrollTop && currentScrollTop > headerHeight) {
+                if (!header.classList.contains('header-hidden')) {
+                    header.classList.add('header-hidden');
+                    mobileMenuBar.classList.add('menu-at-top'); // Add class for other potential styles (e.g., shadow)
+                    adjustLayoutForMobile(); // Crucially, update inline styles
+                }
+            } 
+            // Scrolling up or scrolled to the very top
+            else if (currentScrollTop < lastScrollTop || currentScrollTop <= 0) {
+                 // Ensure header is visible if scrolling up or at the top,
+                 // and it was previously hidden.
+                if (header.classList.contains('header-hidden') || currentScrollTop <= headerHeight) {
+                     // The "currentScrollTop <= headerHeight" also handles the case where user scrolls
+                     // very fast to an area where the header should be visible.
+                    header.classList.remove('header-hidden');
+                    mobileMenuBar.classList.remove('menu-at-top');
+                    adjustLayoutForMobile(); // Update inline styles
+                }
+            }
+            
+            lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; 
+        }
+
+        // Initial layout adjustment on page load
+        adjustLayoutForMobile();
+
+        // Add a check for when the page loads already scrolled down on mobile
+        if (window.innerWidth < 768 && window.scrollY > header.offsetHeight) {
+            if(!header.classList.contains('header-hidden')) { // Avoid redundant operations
+                header.classList.add('header-hidden');
+                mobileMenuBar.classList.add('menu-at-top');
+                adjustLayoutForMobile(); // Apply correct styles
+                lastScrollTop = window.scrollY; // Set initial scroll top if loaded scrolled
+            }
+        }
+
+
+        // Throttle scroll event for better performance
+        let ticking = false;
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    handleScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            // Adjust layout on resize, important for switching between mobile/desktop views
+            // or orientation changes on mobile.
+            adjustLayoutForMobile();
+             // Re-evaluate scroll position after resize for mobile
+            if (window.innerWidth < 768) {
+                lastScrollTop = window.scrollY || document.documentElement.scrollTop; // Update lastScrollTop
+                handleScroll(); // Re-run scroll logic to apply correct state based on new dimensions/scroll
+            }
+        });
+    }
 </script>
 </body>
 </html>

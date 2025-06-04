@@ -269,8 +269,8 @@
                     padding-top 0.35s ease-in-out, padding-bottom 0.35s ease-in-out,
                     margin-top 0.35s ease-in-out; 
     }
-    .full-width-l2-content.is-open { display: block; opacity: 1; padding: 1rem var(--container-padding-mobile); margin-top: 0.5rem; box-shadow: 0 2px 6px rgba(211, 47, 47, 0.1); }
-    .full-width-l2-content .l2-columns-wrapper { display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; max-width: var(--container-max-width); margin: 0 auto; }
+    .full-width-l2-content.is-open { display: block; opacity: 1; padding: 0.5rem var(--container-padding-mobile); margin-top: 0.2rem; box-shadow: 0 2px 6px rgba(211, 47, 47, 0.1); }
+    .full-width-l2-content .l2-columns-wrapper { display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; max-width: var(--container-max-width); margin: 0 auto; padding-top: 0.2rem; }
     .full-width-l2-content .l2-column {
         list-style: none; padding: 0; margin: 0;
         flex-basis: calc(33.333% - 0.67rem); min-width: 180px; box-sizing: border-box;
@@ -316,7 +316,7 @@
         .overlay-main-nav > ul { padding: 0 var(--container-padding-desktop); gap: 0.75rem 1rem; }
         .overlay-main-nav > ul > li { flex-basis: calc(33.333% - 0.67rem); margin-bottom: 0.5rem;}
         .overlay-main-nav a.submenu-toggle-link { padding: 0.5rem 0.75rem;}
-        .full-width-l2-content.is-open { padding: 0.5rem var(--container-padding-desktop); margin-top: 0.5rem; }
+        .full-width-l2-content.is-open { padding: 0.5rem var(--container-padding-desktop); margin-top: 0.2rem; }
         .full-width-l2-content .l2-column { flex-basis: calc(33.333% - 0.67rem); min-width: 200px; }
         .content-section, .footer-container { padding: 0 var(--container-padding-desktop); }
         .overlay-menu-top-bar .logo img { height: 36px; } /* Ensure overlay logo matches main on desktop if desired */
@@ -834,7 +834,7 @@
             fullWidthL2ContentHolder.classList.add('is-open');
             fullWidthL2ContentHolder.style.paddingTop = '';
             fullWidthL2ContentHolder.style.paddingBottom = '';
-            fullWidthL2ContentHolder.style.marginTop = '';
+            fullWidthL2ContentHolder.style.marginTop = '0.2rem';
             fullWidthL2ContentHolder.style.maxHeight = fullWidthL2ContentHolder.scrollHeight + "px";
         }, 10);
     }
