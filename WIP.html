@@ -418,8 +418,8 @@
         .full-width-l2-content { margin-top: 0; border-bottom: 1px solid #ffe0e0; }
         .full-width-l2-content.is-open { padding: 0.5rem 0; margin-top:0; }
         .full-width-l2-content .l2-columns-wrapper { flex-direction: column; gap: 0; }
-        .full-width-l2-content .l2-column { 
-            padding: 0 calc(var(--container-padding-mobile) + 1rem); 
+                .full-width-l2-content .l2-column { 
+            padding: 0 var(--container-padding-mobile); /* Changed to align with L1 padding */
             min-width: auto; width: 100%; flex-basis: auto;
         }
          .full-width-l2-content .l2-column li { margin-bottom: 0;}
