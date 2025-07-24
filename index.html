@@ -114,7 +114,7 @@
 
     /* --- Featured Bar Styles --- */
     .featured-bar {
-        background-color: var(--neutral-medium); 
+        background-color: var(--neutral-light); 
         padding: 0.5rem 0;
         border-bottom: 1px solid var(--light-border);
         font-size: 0.85rem;
@@ -155,17 +155,26 @@
         flex-shrink: 0; 
     }
     .featured-bar a { /* For the featured item links/chips */
-        background-color: var(--brand-red);
-        color: var(--neutral-light);
+        background-color: #e8e8e8;
+        color: var(--brand-dark);
         text-decoration: none;
         padding: 0.3rem 0.75rem;
         border-radius: 4px;
         transition: background-color 0.2s ease;
         display: inline-block;
-        font-weight: 500;
+        font-weight: bold;
         line-height: 1.3;
     }
     .featured-bar a:hover {
+        background-color: #d8d8d8;
+        color: var(--brand-dark);
+    }
+    .featured-bar a.featured-highlight { /* For the highlighted featured item (Premium) */
+        background-color: var(--brand-red);
+        color: var(--neutral-light);
+        font-weight: bold;
+    }
+    .featured-bar a.featured-highlight:hover {
         background-color: #b71c1c;
         color: var(--neutral-light);
     }
@@ -611,6 +620,10 @@
                 const a = document.createElement('a');
                 a.href = item.href;
                 a.textContent = getFeaturedItemTitle(item); // Set text for the link (chip)
+                // Highlight Premium item with red background
+                if (item.title.includes('Premium') || item.kannadaTitle.includes('ಪ್ರೀಮಿಯಂ')) {
+                    a.classList.add('featured-highlight');
+                }
                 // For accessibility, if the link itself doesn't have descriptive text (e.g., if it were an icon too)
                 // you would set aria-label: a.setAttribute('aria-label', getFeaturedItemTitle(item));
                 li.appendChild(a);
@@ -627,8 +640,12 @@
             featuredItemsData.forEach(item => {
                 const li = document.createElement('li');
                 const a = document.createElement('a');
-                a.href = item.href;
                 a.textContent = getFeaturedItemTitle(item); // Set text for the link (chip)
+                a.href = item.href;
+                // Highlight Premium item with red background
+                if (item.title.includes('Premium') || item.kannadaTitle.includes('ಪ್ರೀಮಿಯಂ')) {
+                    a.classList.add('featured-highlight');
+                }
                 li.appendChild(a);
                 mobileOverlayFeaturedUl.appendChild(li);
             });
