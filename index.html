@@ -361,6 +361,48 @@
     }
     .full-width-l2-content .l2-column a:hover { background-color: rgba(211, 47, 47, 0.08); color: var(--brand-red); }
 
+    /* --- Overlay Menu Follow Section --- */
+    .overlay-follow-section {
+        margin-top: 2rem;
+        padding: 1.5rem var(--container-padding-mobile);
+        border-top: 1px solid var(--light-border);
+        text-align: center;
+        max-width: var(--container-max-width);
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .follow-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--brand-dark);
+        margin-bottom: 1rem;
+        font-family: 'PV Headline', 'Noto Sans', sans-serif;
+    }
+    .overlay-social-links {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .overlay-social-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(0,0,0,0.05);
+        color: var(--brand-dark);
+        font-size: 1.1rem;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        text-decoration: none;
+    }
+    .overlay-social-link:hover {
+        background-color: var(--brand-red);
+        color: white;
+        text-decoration: none;
+    }
+
     .content-section { 
         max-width: var(--container-max-width); 
         margin: 2rem auto; 
@@ -403,6 +445,56 @@
         font-family: 'PV Text', 'Noto Sans', sans-serif;
     }
 
+    /* --- Mobile Bottom Ad Slot --- */
+    .mobile-bottom-ad {
+        display: none; /* Hidden by default, shown only on mobile */
+        position: fixed;
+        bottom: 52px; /* Small padding below the ad */
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: var(--neutral-light);
+        border-top: 1px solid var(--light-border);
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        transition: bottom 0.3s ease;
+    }
+    .mobile-bottom-ad .ad-label {
+        background-color: var(--neutral-light);
+        color: var(--neutral-gray);
+        font-size: 0.65rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 18px;
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+        border-bottom: 1px solid var(--light-border);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .mobile-bottom-ad .ad-content {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--neutral-light);
+        max-width: 320px;
+        margin: 0 auto;
+        border: 1px dashed var(--neutral-gray);
+        border-radius: 2px;
+    }
+    .mobile-bottom-ad .ad-placeholder {
+        color: var(--neutral-gray);
+        font-size: 0.8rem;
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+        text-align: center;
+    }
+    /* Position ad at bottom when bottom nav is hidden */
+    .mobile-bottom-ad.nav-hidden {
+        bottom: 2px;
+    }
+
     /* --- Mobile Bottom Sticky Navigation --- */
     .mobile-bottom-nav {
         display: none; /* Hidden by default, shown only on mobile */
@@ -412,7 +504,6 @@
         right: 0;
         background-color: var(--neutral-light);
         border-top: 1px solid var(--light-border);
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
         z-index: 1000;
         padding: 0.25rem 0;
     }
@@ -469,6 +560,19 @@
         .full-width-l2-content .l2-column { flex-basis: calc(33.333% - 0.67rem); min-width: 200px; }
         .content-section, .footer-container { padding: 0 var(--container-padding-desktop); }
         .overlay-menu-top-bar .logo img { height: 36px; } /* Ensure overlay logo matches main on desktop if desired */
+        .overlay-follow-section { padding: 1.5rem var(--container-padding-desktop); }
+        
+        /* Make featured bar sticky on desktop */
+        .desktop-featured-bar {
+            position: sticky;
+            top: 64px; /* Below the sticky header */
+            z-index: 999;
+            background-color: var(--neutral-light);
+            transition: transform 0.3s ease;
+        }
+        .desktop-featured-bar.hide-on-scroll {
+            transform: translateY(-100%);
+        }
     }
     @media (min-width: 768px) and (max-width: 991.98px) { /* Tablet */
         .header-container, .overlay-menu-top-bar { padding: 12px var(--container-padding-mobile); min-height: 56px;}
@@ -535,7 +639,8 @@
          .full-width-l2-content .l2-column li { margin-bottom: 0;}
          .full-width-l2-content .l2-column a { padding: 0.6rem 0; }
         .mobile-bottom-nav { display: flex; } /* Show mobile bottom nav on mobile */
-        body { padding-bottom: 65px; } /* Add padding to prevent content from being hidden behind bottom nav */
+        .mobile-bottom-ad { display: block; } /* Show mobile bottom ad on mobile */
+        body { padding-bottom: 102px; } /* Add padding to prevent content from being hidden behind ad and nav */
         
         /* Make main header non-sticky on mobile */
         .site-header { position: static; box-shadow: none; }
@@ -649,6 +754,19 @@
                 <ul id="overlayNavUl"></ul>
             </nav>
             <div id="fullWidthL2ContentHolder" class="full-width-l2-content"></div>
+            
+            <!-- Follow Us Section -->
+            <div class="overlay-follow-section">
+                <div class="follow-title">Follow Us</div>
+                <div class="overlay-social-links">
+                    <a href="#" class="overlay-social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="overlay-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="overlay-social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="overlay-social-link"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="overlay-social-link"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="overlay-social-link"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -680,6 +798,15 @@
            <div class="copyright"> © 2024 The Printers (Mysore) Private Ltd. </div>
        </div>
    </footer>
+
+    <!-- Mobile Bottom Ad Slot -->
+    <div class="mobile-bottom-ad" id="mobileBottomAd">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-content">
+            <!-- Ad content will be inserted here -->
+            <div class="ad-placeholder">320 x 50</div>
+        </div>
+    </div>
 
     <!-- Mobile Bottom Sticky Navigation -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav">
@@ -768,6 +895,10 @@
                 kn: "ಮೆನು",
                 en: "Menu"
             }
+        },
+        followUs: {
+            kn: "ನಮ್ಮನ್ನು ಅನುಸರಿಸಿ",
+            en: "Follow Us"
         }
         // featuredLabel was removed as the label is now a static icon in HTML
     };
@@ -842,6 +973,12 @@
             if (menuSpan) menuSpan.textContent = uiStrings.bottomNavigation.menu[currentMenuLanguage];
         }
         
+        // Update follow us text in overlay menu
+        const followTitle = document.querySelector('.follow-title');
+        if (followTitle) {
+            followTitle.textContent = uiStrings.followUs[currentMenuLanguage];
+        }
+        
         // Apply Kannada font size adjustments
         applyKannadaFontSizes();
     }
@@ -898,6 +1035,11 @@
             // Footer elements
             document.querySelectorAll('.utility-links a, .app-link, .copyright').forEach(el => {
                 el.classList.add('kannada-text');
+            });
+            
+            // Follow us title in overlay menu
+            document.querySelectorAll('.follow-title').forEach(title => {
+                title.classList.add('kannada-text');
             });
         }
     }
@@ -1295,12 +1437,16 @@
 
     document.addEventListener('DOMContentLoaded', initializeMenus);
     
-    // Initialize mobile bottom nav as hidden
+    // Initialize mobile bottom nav and ad on page load
     document.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth <= 767.98) {
             const mobileBottomNav = document.getElementById('mobileBottomNav');
+            const mobileBottomAd = document.getElementById('mobileBottomAd');
             if (mobileBottomNav) {
                 mobileBottomNav.classList.add('hide-on-scroll');
+            }
+            if (mobileBottomAd) {
+                mobileBottomAd.classList.add('nav-hidden');
             }
         }
     });
@@ -1315,9 +1461,10 @@
         const currentScrollY = window.scrollY;
         const mobileMenuBar = document.getElementById('mobileMenuBar');
         const mobileBottomNav = document.getElementById('mobileBottomNav');
+        const mobileBottomAd = document.getElementById('mobileBottomAd');
         const siteHeader = document.querySelector('.site-header');
         
-        if (!mobileMenuBar || !mobileBottomNav || !siteHeader) return;
+        if (!mobileMenuBar || !mobileBottomNav || !mobileBottomAd || !siteHeader) return;
         
         // Clear any existing timeout
         if (scrollTimeout) {
@@ -1352,6 +1499,40 @@
             }
         }
         
+        // Handle ad positioning based on bottom nav visibility
+        const isBottomNavHidden = mobileBottomNav.classList.contains('hide-on-scroll');
+        if (isBottomNavHidden) {
+            mobileBottomAd.classList.add('nav-hidden');
+        } else {
+            mobileBottomAd.classList.remove('nav-hidden');
+        }
+        
+        // Update last scroll position after a small delay to reduce jitter
+        scrollTimeout = setTimeout(() => {
+            lastScrollY = currentScrollY;
+        }, 10);
+    }
+    
+    // --- Desktop Scroll Direction Handler ---
+    function handleDesktopScrollDirection() {
+        if (window.innerWidth <= 991.98) return; // Only on desktop
+        
+        const currentScrollY = window.scrollY;
+        const desktopFeaturedBar = document.getElementById('desktopFeaturedBar');
+        
+        if (!desktopFeaturedBar) return;
+        
+        // Determine scroll direction
+        const scrollingDown = currentScrollY > lastScrollY && currentScrollY > 100; // Only hide after scrolling 100px
+        const scrollingUp = currentScrollY < lastScrollY;
+        
+        // Handle desktop featured bar
+        if (scrollingDown) {
+            desktopFeaturedBar.classList.add('hide-on-scroll');
+        } else if (scrollingUp) {
+            desktopFeaturedBar.classList.remove('hide-on-scroll');
+        }
+        
         // Update last scroll position after a small delay to reduce jitter
         scrollTimeout = setTimeout(() => {
             lastScrollY = currentScrollY;
@@ -1364,6 +1545,7 @@
         if (scrollThrottle) return;
         scrollThrottle = setTimeout(() => {
             handleMobileScrollDirection();
+            handleDesktopScrollDirection();
             scrollThrottle = null;
         }, 16); // ~60fps
     });
@@ -1372,11 +1554,19 @@
     window.addEventListener('resize', debounce(() => {
         const mobileMenuBar = document.getElementById('mobileMenuBar');
         const mobileBottomNav = document.getElementById('mobileBottomNav');
+        const mobileBottomAd = document.getElementById('mobileBottomAd');
+        const desktopFeaturedBar = document.getElementById('desktopFeaturedBar');
         
         if (window.innerWidth > 767.98) {
-            // Remove classes on desktop/tablet
+            // Remove mobile classes on desktop/tablet
             if (mobileMenuBar) mobileMenuBar.classList.remove('hide-on-scroll');
             if (mobileBottomNav) mobileBottomNav.classList.remove('hide-on-scroll');
+            if (mobileBottomAd) mobileBottomAd.classList.remove('nav-hidden');
+        }
+        
+        if (window.innerWidth <= 991.98) {
+            // Remove desktop classes on mobile/tablet
+            if (desktopFeaturedBar) desktopFeaturedBar.classList.remove('hide-on-scroll');
         }
     }, 250));
 </script>
