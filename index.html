@@ -320,7 +320,7 @@
         border-top: 1px solid var(--light-border);
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
         z-index: 1000;
-        padding: 0.5rem 0;
+        padding: 0.25rem 0;
     }
     .mobile-nav-item {
         display: flex;
@@ -328,7 +328,7 @@
         align-items: center;
         justify-content: center;
         flex: 1;
-        padding: 0.5rem 0.25rem;
+        padding: 0.25rem 0.25rem;
         text-decoration: none;
         color: var(--brand-dark);
         font-size: 0.75rem;
@@ -341,7 +341,7 @@
     }
     .mobile-nav-item i {
         font-size: 1.2rem;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.2rem;
         display: block;
     }
     .mobile-nav-item span {
@@ -441,7 +441,32 @@
          .full-width-l2-content .l2-column li { margin-bottom: 0;}
          .full-width-l2-content .l2-column a { padding: 0.6rem 0; }
         .mobile-bottom-nav { display: flex; } /* Show mobile bottom nav on mobile */
-        body { padding-bottom: 80px; } /* Add padding to prevent content from being hidden behind sticky nav */
+        body { padding-bottom: 65px; } /* Add padding to prevent content from being hidden behind bottom nav */
+        
+        /* Make main header non-sticky on mobile */
+        .site-header { position: static; box-shadow: none; }
+        
+        /* Make mobile menu bar sticky on mobile */
+        .mobile-menu-bar { 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease;
+        }
+        .mobile-menu-bar.hide-on-scroll {
+            transform: translateY(-100%);
+        }
+        
+        /* Update mobile bottom nav for scroll behavior */
+        .mobile-bottom-nav { 
+            display: flex;
+            transform: translateY(0); /* Default visible state */
+            transition: transform 0.3s ease;
+        }
+        .mobile-bottom-nav.hide-on-scroll {
+            transform: translateY(100%); /* Hidden state */
+        }
     }
 </style>
 </head>
@@ -1066,6 +1091,91 @@
     }
 
     document.addEventListener('DOMContentLoaded', initializeMenus);
+    
+    // Initialize mobile bottom nav as hidden
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.innerWidth <= 767.98) {
+            const mobileBottomNav = document.getElementById('mobileBottomNav');
+            if (mobileBottomNav) {
+                mobileBottomNav.classList.add('hide-on-scroll');
+            }
+        }
+    });
+    
+    // --- Mobile Scroll Direction Handler ---
+    let lastScrollY = 0;
+    let scrollTimeout = null;
+    
+    function handleMobileScrollDirection() {
+        if (window.innerWidth > 767.98) return; // Only on mobile
+        
+        const currentScrollY = window.scrollY;
+        const mobileMenuBar = document.getElementById('mobileMenuBar');
+        const mobileBottomNav = document.getElementById('mobileBottomNav');
+        const siteHeader = document.querySelector('.site-header');
+        
+        if (!mobileMenuBar || !mobileBottomNav || !siteHeader) return;
+        
+        // Clear any existing timeout
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+        }
+        
+        // Get header height to determine when it's off screen
+        const headerHeight = siteHeader.offsetHeight;
+        const headerOffScreen = currentScrollY > headerHeight;
+        
+        // Determine scroll direction
+        const scrollingDown = currentScrollY > lastScrollY && currentScrollY > 100; // Only hide after scrolling 100px
+        const scrollingUp = currentScrollY < lastScrollY;
+        
+        // Handle mobile menu bar (can show/hide regardless of header position)
+        if (scrollingDown) {
+            mobileMenuBar.classList.add('hide-on-scroll');
+        } else if (scrollingUp) {
+            mobileMenuBar.classList.remove('hide-on-scroll');
+        }
+        
+        // Handle bottom nav (only show after header is off screen)
+        if (!headerOffScreen) {
+            // Header still visible - always hide bottom nav
+            mobileBottomNav.classList.add('hide-on-scroll');
+        } else {
+            // Header off screen - use scroll direction logic
+            if (scrollingDown) {
+                mobileBottomNav.classList.add('hide-on-scroll');
+            } else if (scrollingUp) {
+                mobileBottomNav.classList.remove('hide-on-scroll');
+            }
+        }
+        
+        // Update last scroll position after a small delay to reduce jitter
+        scrollTimeout = setTimeout(() => {
+            lastScrollY = currentScrollY;
+        }, 10);
+    }
+    
+    // Add scroll event listener with throttling
+    let scrollThrottle = null;
+    window.addEventListener('scroll', () => {
+        if (scrollThrottle) return;
+        scrollThrottle = setTimeout(() => {
+            handleMobileScrollDirection();
+            scrollThrottle = null;
+        }, 16); // ~60fps
+    });
+    
+    // Reset on resize to ensure proper behavior
+    window.addEventListener('resize', debounce(() => {
+        const mobileMenuBar = document.getElementById('mobileMenuBar');
+        const mobileBottomNav = document.getElementById('mobileBottomNav');
+        
+        if (window.innerWidth > 767.98) {
+            // Remove classes on desktop/tablet
+            if (mobileMenuBar) mobileMenuBar.classList.remove('hide-on-scroll');
+            if (mobileBottomNav) mobileBottomNav.classList.remove('hide-on-scroll');
+        }
+    }, 250));
 </script>
 </body>
 </html>
