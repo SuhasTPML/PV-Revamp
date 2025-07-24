@@ -9,6 +9,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+    /* --- Custom Font Faces --- */
+    /* PV Headline: Used for navigation, buttons, headlines, and important UI elements */
+    @font-face {
+        font-family: 'PV Headline';
+        src: url('PvHeadlineSemiBold.ttf') format('truetype');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    /* PV Text: Used for body text, content, and secondary UI elements */
+    @font-face {
+        font-family: 'PV Text';
+        src: url('PvTextRegular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    /* --- Kannada Font Size Adjustments --- */
+    /* Increase font sizes for better Kannada readability */
+    .kannada-text {
+        font-size: 1.1em; /* 10% increase for better Kannada readability */
+    }
+    
+    .kannada-text.small-text {
+        font-size: 1.15em; /* 15% increase for small Kannada text */
+    }
+    
+    .kannada-text.large-text {
+        font-size: 1.08em; /* 8% increase for already large text */
+    }
+    
     :root {
         --brand-yellow: #FFC107; --brand-red: #D32F2F; --brand-dark: #212121;
         --neutral-light: #ffffff; --neutral-medium: #f7f7f7; --neutral-gray: #757575;  
@@ -22,7 +55,13 @@
         --footer-padding: 2rem 1rem;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Noto Sans', sans-serif; color: var(--text-color); background-color: var(--background-color); line-height: 1.6; font-size: 16px; }
+    body { 
+        font-family: 'PV Text', 'Noto Sans', sans-serif; 
+        color: var(--text-color); 
+        background-color: var(--background-color); 
+        line-height: 1.6; 
+        font-size: 16px; 
+    }
     a { color: var(--brand-red); text-decoration: none; transition: color 0.2s ease; }
     a:hover { text-decoration: none; color: #b71c1c; } 
     img { max-width: 100%; height: auto; display: block; }
@@ -61,6 +100,7 @@
     .desktop-nav-links > ul > li { position: relative; display: flex; align-items: center; flex-shrink: 0; }
     .desktop-nav-links > ul > li > a { 
         color: var(--brand-dark); text-decoration: none; font-size: 0.9rem; font-weight: 600; 
+        font-family: 'PV Headline', 'Noto Sans', sans-serif;
         white-space: nowrap; padding: 0.5rem 0.75rem; border-bottom: 3px solid transparent; 
         transition: color 0.2s ease, border-color 0.2s ease; display: flex; align-items: center; 
         gap: 0.3rem; height: 100%; line-height: 1; margin: 0;
@@ -76,7 +116,14 @@
     .desktop-nav-links > ul > li.submenu-visible > .mega-menu-panel { display: flex; }
     .mega-menu-panel .sub-menu-column { list-style: none; padding: 0; margin: 0; flex-shrink: 0; min-width: 180px; }
     .mega-menu-panel .sub-menu-column li { margin-bottom: 0.25rem; }
-    .mega-menu-panel .sub-menu-column a { display: block; padding: 0.5rem 0.75rem; color: var(--brand-dark); font-size: 0.9rem; border-radius: 3px; }
+    .mega-menu-panel .sub-menu-column a { 
+        display: block; 
+        padding: 0.5rem 0.75rem; 
+        color: var(--brand-dark); 
+        font-size: 0.9rem; 
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+        border-radius: 3px; 
+    }
     .mega-menu-panel .sub-menu-column a:hover { background-color: var(--menu-hover-bg); color: var(--brand-red); }
 
     .header-right { display: flex; align-items: center; flex-shrink: 0; height: 100%; }
@@ -90,6 +137,7 @@
     .login-button, .epaper-main-header-button { 
         color: var(--button-primary-text); padding: 0.6rem 1.2rem; border-radius: 20px; 
         font-weight: 600; font-size: 0.85rem; transition: background-color 0.2s ease; 
+        font-family: 'PV Headline', 'Noto Sans', sans-serif;
         white-space: nowrap; text-align: center; line-height: 1; margin: 0;
         display: inline-flex; align-items: center; justify-content: center; height: auto;
     }
@@ -107,6 +155,7 @@
     .mobile-nav-links li { flex-shrink: 0; flex-grow: 1; text-align: center; }
     .mobile-nav-links a {
         color: var(--brand-dark); font-size: 0.75rem; font-weight: 600; text-decoration: none; 
+        font-family: 'PV Headline', 'Noto Sans', sans-serif;
         display: block; padding: 0.5rem 0.25rem; text-align: center; border-bottom: 3px solid transparent;
         transition: color 0.2s ease, border-color 0.2s ease; width: 100%; 
     }
@@ -163,6 +212,7 @@
         transition: background-color 0.2s ease;
         display: inline-block;
         font-weight: bold;
+        font-family: 'PV Headline', 'Noto Sans', sans-serif;
         line-height: 1.3;
     }
     .featured-bar a:hover {
@@ -252,8 +302,20 @@
     .overlay-main-nav a.submenu-toggle-link.active-l1 { 
         box-shadow: 0 0 0 2px var(--brand-red), 0 2px 5px rgba(0,0,0,0.1); background-color: #fff7f7; 
     }
-    .menu-item-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 0.2rem; }
-    .menu-item-tagline { font-size: 0.75rem; color: var(--neutral-gray); line-height: 1.3; font-weight: normal; }
+    .menu-item-title { 
+        font-size: 0.9rem; 
+        text-transform: uppercase; 
+        letter-spacing: 0.02em; 
+        margin-bottom: 0.2rem; 
+        font-family: 'PV Headline', 'Noto Sans', sans-serif;
+    }
+    .menu-item-tagline { 
+        font-size: 0.75rem; 
+        color: var(--neutral-gray); 
+        line-height: 1.3; 
+        font-weight: normal; 
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+    }
     .expand-icon { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: #999; transition: transform 0.2s ease; }
     
     .overlay-header-search-container {
@@ -286,28 +348,60 @@
     }
     .full-width-l2-content .l2-column li { margin-bottom: 0.1rem; }
     .full-width-l2-content .l2-column a { 
-        display: block; padding: 0.5rem 0.25rem; font-size: 0.85rem; color: var(--brand-dark); 
-        text-decoration: none; border-radius: 3px; white-space: normal; 
+        display: block; 
+        padding: 0.5rem 0.25rem; 
+        font-size: 0.85rem; 
+        color: var(--brand-dark); 
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+        text-decoration: none; 
+        border-radius: 3px; 
+        white-space: normal; 
         transition: background-color 0.2s ease, color 0.2s ease;
         font-weight: 500;
     }
     .full-width-l2-content .l2-column a:hover { background-color: rgba(211, 47, 47, 0.08); color: var(--brand-red); }
 
-    .content-section { max-width: var(--container-max-width); margin: 2rem auto; padding: 0 var(--container-padding-mobile); }
+    .content-section { 
+        max-width: var(--container-max-width); 
+        margin: 2rem auto; 
+        padding: 0 var(--container-padding-mobile); 
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+    }
     
     .site-footer { background-color: var(--footer-background); padding: var(--footer-padding); margin-top: 2rem; border-top: 1px solid var(--light-border); }
     .footer-container { max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--container-padding-mobile); text-align: center; box-sizing: border-box; }
     .utility-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2rem; margin-bottom: 2rem; }
-    .utility-links a { color: var(--neutral-gray); font-size: 0.9rem; transition: color 0.2s ease; }
+    .utility-links a { 
+        color: var(--neutral-gray); 
+        font-size: 0.9rem; 
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+        transition: color 0.2s ease; 
+    }
     .utility-links a:hover { color: var(--brand-dark); }
     .app-social-links { display: flex; flex-direction: column; align-items: center; margin: 1.5rem 0; gap: 1.5rem; }
     .app-links { display: flex; gap: 1.5rem; justify-content: center; }
-    .app-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--brand-dark); font-size: 0.9rem; padding: 0.5rem 0.75rem; border-radius: 4px; background-color: rgba(0,0,0,0.05); transition: background-color 0.2s ease; }
+    .app-link { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 0.5rem; 
+        color: var(--brand-dark); 
+        font-size: 0.9rem; 
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+        padding: 0.5rem 0.75rem; 
+        border-radius: 4px; 
+        background-color: rgba(0,0,0,0.05); 
+        transition: background-color 0.2s ease; 
+    }
     .app-link:hover { background-color: rgba(0,0,0,0.1); text-decoration: none; }
     .social-links { display: flex; gap: 1rem; justify-content: center; }
     .social-link { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background-color: rgba(0,0,0,0.05); color: var(--brand-dark); font-size: 1rem; transition: background-color 0.2s ease, color 0.2s ease; }
     .social-link:hover { background-color: var(--brand-red); color: white; text-decoration: none; }
-    .copyright { margin-top: 1.5rem; font-size: 0.85rem; color: var(--neutral-gray); }
+    .copyright { 
+        margin-top: 1.5rem; 
+        font-size: 0.85rem; 
+        color: var(--neutral-gray); 
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+    }
 
     /* --- Mobile Bottom Sticky Navigation --- */
     .mobile-bottom-nav {
@@ -333,11 +427,11 @@
         color: var(--brand-dark);
         font-size: 0.75rem;
         font-weight: 500;
+        font-family: 'PV Headline', 'Noto Sans', sans-serif;
         transition: color 0.2s ease;
         border: none;
         background: transparent;
         cursor: pointer;
-        font-family: inherit;
     }
     .mobile-nav-item i {
         font-size: 1.2rem;
@@ -656,6 +750,24 @@
         searchPlaceholder: {
             kn: "ಪ್ರಜಾವಾಣಿಯಲ್ಲಿ ಹುಡುಕಿ...",
             en: "Search Prajavani..."
+        },
+        bottomNavigation: {
+            home: {
+                kn: "ಮುಖ್ಯ",
+                en: "Home"
+            },
+            podcasts: {
+                kn: "ಪಾಡ್‌ಕಾಸ್ಟ್",
+                en: "Podcasts"
+            },
+            horoscope: {
+                kn: "ಭವಿಷ್ಯ",
+                en: "Horoscope"
+            },
+            menu: {
+                kn: "ಮೆನು",
+                en: "Menu"
+            }
         }
         // featuredLabel was removed as the label is now a static icon in HTML
     };
@@ -693,13 +805,101 @@
         return currentMenuLanguage === 'kn' ? item.kannadaTitle : item.title;
     }
 
+    // --- Language Switching Function ---
+    function switchLanguage(newLanguage) {
+        if (newLanguage === 'kn' || newLanguage === 'en') {
+            currentMenuLanguage = newLanguage;
+            populateAllMenus(); // Repopulate all menus with new language
+            updateStaticUIText(); // Update static text elements
+            console.log('Language switched to:', newLanguage === 'kn' ? 'Kannada' : 'English');
+        } else {
+            console.error('Invalid language. Use "kn" for Kannada or "en" for English.');
+        }
+    }
+    
+    // Make switchLanguage globally accessible for testing
+    window.switchLanguage = switchLanguage;
+
     function updateStaticUIText() {
         const overlayHeaderSearchInput = document.querySelector('.overlay-header-search-input');
         const mobileOverlaySearchInput = document.getElementById('overlaySearchInput');
+        const mobileBottomNav = document.getElementById('mobileBottomNav');
 
         // Logo text updates were removed as logo is now an SVG
         if (overlayHeaderSearchInput) overlayHeaderSearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
         if (mobileOverlaySearchInput) mobileOverlaySearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
+        
+        // Update bottom navigation text
+        if (mobileBottomNav) {
+            const homeSpan = mobileBottomNav.querySelector('a[href="/"] span');
+            const podcastsSpan = mobileBottomNav.querySelector('a[href="/op-ed/podcast"] span');
+            const horoscopeSpan = mobileBottomNav.querySelector('a[href="/horoscope"] span');
+            const menuSpan = mobileBottomNav.querySelector('button span');
+            
+            if (homeSpan) homeSpan.textContent = uiStrings.bottomNavigation.home[currentMenuLanguage];
+            if (podcastsSpan) podcastsSpan.textContent = uiStrings.bottomNavigation.podcasts[currentMenuLanguage];
+            if (horoscopeSpan) horoscopeSpan.textContent = uiStrings.bottomNavigation.horoscope[currentMenuLanguage];
+            if (menuSpan) menuSpan.textContent = uiStrings.bottomNavigation.menu[currentMenuLanguage];
+        }
+        
+        // Apply Kannada font size adjustments
+        applyKannadaFontSizes();
+    }
+    
+    // --- Kannada Font Size Management ---
+    function applyKannadaFontSizes() {
+        // Remove existing Kannada classes
+        document.querySelectorAll('.kannada-text').forEach(el => {
+            el.classList.remove('kannada-text', 'small-text', 'large-text');
+        });
+        
+        // Apply Kannada classes if current language is Kannada
+        if (currentMenuLanguage === 'kn') {
+            // Desktop navigation links
+            document.querySelectorAll('#desktopNavUl a').forEach(link => {
+                link.classList.add('kannada-text');
+            });
+            
+            // Mobile navigation links  
+            document.querySelectorAll('#mobileNavUl a').forEach(link => {
+                link.classList.add('kannada-text', 'small-text');
+            });
+            
+            // Mobile bottom navigation
+            document.querySelectorAll('.mobile-nav-item span').forEach(span => {
+                span.classList.add('kannada-text', 'small-text');
+            });
+            
+            // Featured bar chips
+            document.querySelectorAll('.featured-bar a').forEach(chip => {
+                chip.classList.add('kannada-text');
+            });
+            
+            // Overlay menu titles
+            document.querySelectorAll('.menu-item-title').forEach(title => {
+                title.classList.add('kannada-text');
+            });
+            
+            // Overlay menu taglines  
+            document.querySelectorAll('.menu-item-tagline').forEach(tagline => {
+                tagline.classList.add('kannada-text', 'small-text');
+            });
+            
+            // L2 submenu links
+            document.querySelectorAll('.l2-column a').forEach(link => {
+                link.classList.add('kannada-text');
+            });
+            
+            // Mega menu links
+            document.querySelectorAll('.mega-menu-panel a').forEach(link => {
+                link.classList.add('kannada-text');
+            });
+            
+            // Footer elements
+            document.querySelectorAll('.utility-links a, .app-link, .copyright').forEach(el => {
+                el.classList.add('kannada-text');
+            });
+        }
     }
 
     // --- Featured Bar Population ---
@@ -1068,6 +1268,9 @@
         populateMobileNav();
         populateOverlayMenu();
         populateFeaturedBars(); // Populate featured bars
+        
+        // Apply Kannada font sizes after menus are populated
+        setTimeout(() => applyKannadaFontSizes(), 10);
     }
     function initializeMenus() {
         try {
@@ -1076,7 +1279,7 @@
             menuData = JSON.parse(menuDataSource.textContent);
 
             populateAllMenus(); 
-            updateStaticUIText();
+            updateStaticUIText(); // This now includes applyKannadaFontSizes()
             initDesktopNavInteractions();
             initOverlayTopBarActions();
 
