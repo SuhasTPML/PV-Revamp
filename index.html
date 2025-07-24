@@ -494,6 +494,10 @@
     .mobile-bottom-ad.nav-hidden {
         bottom: 2px;
     }
+    /* Hide ad when scrolling on mobile */
+    .mobile-bottom-ad.hide-on-scroll {
+        transform: translateY(100%);
+    }
 
     /* --- Mobile Bottom Sticky Navigation --- */
     .mobile-bottom-nav {
@@ -640,7 +644,7 @@
          .full-width-l2-content .l2-column a { padding: 0.6rem 0; }
         .mobile-bottom-nav { display: flex; } /* Show mobile bottom nav on mobile */
         .mobile-bottom-ad { display: block; } /* Show mobile bottom ad on mobile */
-        body { padding-bottom: 102px; } /* Add padding to prevent content from being hidden behind ad and nav */
+        body { padding-bottom: 85px; } /* Add padding for when both ad and nav are visible */
         
         /* Make main header non-sticky on mobile */
         .site-header { position: static; box-shadow: none; }
@@ -1446,6 +1450,7 @@
                 mobileBottomNav.classList.add('hide-on-scroll');
             }
             if (mobileBottomAd) {
+                mobileBottomAd.classList.add('hide-on-scroll');
                 mobileBottomAd.classList.add('nav-hidden');
             }
         }
@@ -1486,12 +1491,16 @@
             mobileMenuBar.classList.remove('hide-on-scroll');
         }
         
-        // Handle bottom nav (only show after header is off screen)
+        // Handle bottom nav and ad (only show after header is off screen)
         if (!headerOffScreen) {
-            // Header still visible - always hide bottom nav
+            // Header still visible - always hide both bottom nav and ad
             mobileBottomNav.classList.add('hide-on-scroll');
+            mobileBottomAd.classList.add('hide-on-scroll');
         } else {
-            // Header off screen - use scroll direction logic
+            // Header off screen - ad is always visible, bottom nav follows scroll direction
+            mobileBottomAd.classList.remove('hide-on-scroll'); // Ad always visible after header hidden
+            
+            // Bottom nav follows scroll direction logic
             if (scrollingDown) {
                 mobileBottomNav.classList.add('hide-on-scroll');
             } else if (scrollingUp) {
@@ -1561,7 +1570,10 @@
             // Remove mobile classes on desktop/tablet
             if (mobileMenuBar) mobileMenuBar.classList.remove('hide-on-scroll');
             if (mobileBottomNav) mobileBottomNav.classList.remove('hide-on-scroll');
-            if (mobileBottomAd) mobileBottomAd.classList.remove('nav-hidden');
+            if (mobileBottomAd) {
+                mobileBottomAd.classList.remove('nav-hidden');
+                mobileBottomAd.classList.remove('hide-on-scroll');
+            }
         }
         
         if (window.innerWidth <= 991.98) {
