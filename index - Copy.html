@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prajavani Prototype - Aligned Overlay Header with Featured Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    :root {
+        --brand-yellow: #FFC107; --brand-red: #D32F2F; --brand-dark: #212121;
+        --neutral-light: #ffffff; --neutral-medium: #f7f7f7; --neutral-gray: #757575;  
+        --light-border: #eeeeee; --menu-hover-bg: #f0f0f0;
+        --button-primary-text: var(--neutral-light); --button-primary-bg: var(--brand-red);
+        --button-secondary-text: var(--brand-dark); --button-secondary-bg: var(--brand-yellow);
+        --text-color: var(--brand-dark); --background-color: var(--neutral-light);
+        --header-background: var(--neutral-light); --footer-background: var(--neutral-medium);
+        --container-padding-mobile: 1rem; --container-padding-desktop: 1.5rem; 
+        --container-max-width: 1280px;
+        --footer-padding: 2rem 1rem;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans', sans-serif; color: var(--text-color); background-color: var(--background-color); line-height: 1.6; font-size: 16px; }
+    a { color: var(--brand-red); text-decoration: none; transition: color 0.2s ease; }
+    a:hover { text-decoration: none; color: #b71c1c; } 
+    img { max-width: 100%; height: auto; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: transparent; padding: 0; }
+    ul { list-style: none; }
+
+    .site-header { background-color: var(--header-background); border-bottom: 1px solid var(--light-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    
+    .header-container { 
+        display: flex; justify-content: space-between; align-items: center; 
+        max-width: var(--container-max-width); margin: 0 auto; 
+        padding: 12px var(--container-padding-mobile); 
+        min-height: 60px;
+    }
+    .header-left { display: flex; align-items: center; gap: 1rem; flex-grow: 1; min-width: 0; }
+    
+    .logo {
+        line-height: 0; /* Helps remove extra space below image */
+    }
+    .logo a {
+        text-decoration: none;
+        display: inline-block; 
+    }
+    .logo a:hover {
+        text-decoration: none;
+    }
+    .logo img { /* Styles for the SVG logo image */
+        display: block; 
+        height: 36px;   
+        width: auto;    
+        vertical-align: top; /* Use top or middle */
+    }
+    
+    .desktop-nav-links { display: none; flex-grow: 1; min-width: 0; }
+    .desktop-nav-links > ul { display: flex; align-items: stretch; gap: 0.5rem; height: 100%; width: max-content; }
+    .desktop-nav-links > ul > li { position: relative; display: flex; align-items: center; flex-shrink: 0; }
+    .desktop-nav-links > ul > li > a { 
+        color: var(--brand-dark); text-decoration: none; font-size: 0.9rem; font-weight: 600; 
+        white-space: nowrap; padding: 0.5rem 0.75rem; border-bottom: 3px solid transparent; 
+        transition: color 0.2s ease, border-color 0.2s ease; display: flex; align-items: center; 
+        gap: 0.3rem; height: 100%; line-height: 1; margin: 0;
+    }
+    .desktop-nav-links > ul > li:hover > a, .desktop-nav-links > ul > li.submenu-visible > a { color: var(--brand-red); border-bottom-color: var(--brand-red); }
+    
+    .mega-menu-panel {
+        display: none; position: absolute; top: 100%; left: 0;
+        background-color: var(--neutral-light); border: 1px solid var(--light-border); border-top: none; 
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1); border-radius: 0 0 4px 4px; padding: 1rem; 
+        z-index: 1050; flex-direction: row; flex-wrap: nowrap; gap: 1rem; 
+    }
+    .desktop-nav-links > ul > li.submenu-visible > .mega-menu-panel { display: flex; }
+    .mega-menu-panel .sub-menu-column { list-style: none; padding: 0; margin: 0; flex-shrink: 0; min-width: 180px; }
+    .mega-menu-panel .sub-menu-column li { margin-bottom: 0.25rem; }
+    .mega-menu-panel .sub-menu-column a { display: block; padding: 0.5rem 0.75rem; color: var(--brand-dark); font-size: 0.9rem; border-radius: 3px; }
+    .mega-menu-panel .sub-menu-column a:hover { background-color: var(--menu-hover-bg); color: var(--brand-red); }
+
+    .header-right { display: flex; align-items: center; flex-shrink: 0; height: 100%; }
+    .main-nav { display: flex; align-items: center; gap: 0.75rem; height: 100%; }
+    .icon-button { 
+        padding: 0.6rem; color: var(--brand-dark); display: inline-flex; 
+        align-items: center; justify-content: center; font-size: 1.1rem; 
+        border-radius: 50%; line-height: 1; margin: 0; height: auto;
+    }
+    .icon-button:hover { color: var(--brand-red); background-color: var(--menu-hover-bg); }
+    .login-button, .epaper-main-header-button { 
+        color: var(--button-primary-text); padding: 0.6rem 1.2rem; border-radius: 20px; 
+        font-weight: 600; font-size: 0.85rem; transition: background-color 0.2s ease; 
+        white-space: nowrap; text-align: center; line-height: 1; margin: 0;
+        display: inline-flex; align-items: center; justify-content: center; height: auto;
+    }
+    .login-button { background-color: var(--button-primary-bg); }
+    .login-button:hover { background-color: #b71c1c; }
+    .epaper-main-header-button { background-color: var(--button-secondary-bg); color: var(--button-secondary-text); display: inline-flex; align-items: center; gap: 0.4rem; }
+    .epaper-main-header-button:hover { background-color: #e3aa00; }
+    .hamburger-icon { font-size: 1.4rem; margin-left: 0.25rem; }
+
+    .mobile-menu-bar { background-color: var(--neutral-light); border-bottom: 1px solid var(--light-border); display: block; width: 100%; }
+    .menu-container { max-width: var(--container-max-width); margin: 0 auto; border-top: 1px solid var(--light-border); padding: 0 0.4rem; }
+    .mobile-nav-links { width: 100%; overflow-x: auto; }
+    .mobile-nav-links ul { display: flex; white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none; width: 100%; justify-content: space-between; }
+    .mobile-nav-links ul::-webkit-scrollbar { display: none; }
+    .mobile-nav-links li { flex-shrink: 0; flex-grow: 1; text-align: center; }
+    .mobile-nav-links a {
+        color: var(--brand-dark); font-size: 0.75rem; font-weight: 600; text-decoration: none; 
+        display: block; padding: 0.5rem 0.25rem; text-align: center; border-bottom: 3px solid transparent;
+        transition: color 0.2s ease, border-color 0.2s ease; width: 100%; 
+    }
+    .mobile-nav-links a:hover, .mobile-nav-links a.active { color: var(--brand-red); border-bottom-color: var(--brand-red); }
+
+    /* --- Featured Bar Styles --- */
+    .featured-bar {
+        background-color: var(--neutral-light); 
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--light-border);
+        font-size: 0.85rem;
+    }
+    .featured-container {
+        max-width: var(--container-max-width);
+        margin: 0 auto;
+        padding: 0 var(--container-padding-mobile); 
+        display: flex;
+        align-items: center;
+        justify-content: center; 
+        overflow-x: auto; 
+        white-space: nowrap; 
+        -webkit-overflow-scrolling: touch; 
+        scrollbar-width: none; 
+        -ms-overflow-style: none; 
+    }
+    .featured-container::-webkit-scrollbar {
+        display: none; 
+    }
+    .featured-icon-label { /* For the bullhorn icon */
+        font-size: 1rem; 
+        color: var(--brand-red); 
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+    }
+    .featured-bar ul {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 0.75rem; 
+    }
+    .featured-bar li {
+        flex-shrink: 0; 
+    }
+    .featured-bar a { /* For the featured item links/chips */
+        background-color: #e8e8e8;
+        color: var(--brand-dark);
+        text-decoration: none;
+        padding: 0.3rem 0.75rem;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        display: inline-block;
+        font-weight: bold;
+        line-height: 1.3;
+    }
+    .featured-bar a:hover {
+        background-color: #d8d8d8;
+        color: var(--brand-dark);
+    }
+    .featured-bar a.featured-highlight { /* For the highlighted featured item (Premium) */
+        background-color: var(--brand-red);
+        color: var(--neutral-light);
+        font-weight: bold;
+    }
+    .featured-bar a.featured-highlight:hover {
+        background-color: #b71c1c;
+        color: var(--neutral-light);
+    }
+    .desktop-featured-bar { 
+        display: block; 
+    }
+    .mobile-overlay-featured-bar { 
+        display: none; 
+        border-top: 1px solid var(--light-border); 
+    }
+
+    /* --- Overlay Menu UI --- */
+    .overlay-menu-panel { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--neutral-light); 
+        z-index: 1100; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; 
+        display: flex; flex-direction: column; 
+    }
+    .overlay-menu-panel.is-open { opacity: 1; visibility: visible; }
+    
+    .overlay-menu-top-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        max-width: var(--container-max-width); margin: 0 auto; 
+        padding: 12px var(--container-padding-mobile); min-height: 60px;
+        border-bottom: 1px solid var(--light-border); flex-shrink: 0; 
+        background-color: var(--neutral-light); width: 100%; box-sizing: border-box;
+    }
+    .overlay-menu-top-bar .header-left { flex-grow: 1; }
+    /* .overlay-menu-top-bar .logo a { font-size: 1.8rem; } /* Controlled by .logo img now */
+    .overlay-menu-top-bar .main-nav { gap: 0.75rem; }
+    .overlay-top-actions .epaper-text { display: inline; }
+    
+    .close-button-overlay-styled { 
+        font-size: 1.4rem; padding: 0.6rem; margin-left: 0.25rem; 
+        color: var(--brand-dark);
+    }
+    .close-button-overlay-styled:hover { color: var(--brand-red); background-color: var(--menu-hover-bg); }
+
+    .overlay-menu-search-input-area {
+        display: none; 
+        padding: 1rem var(--container-padding-mobile); 
+        border-bottom: 1px solid var(--light-border);
+        background-color: var(--neutral-light); flex-shrink: 0;
+        max-width: var(--container-max-width); margin: 0 auto;
+        width: 100%;
+    }
+    .overlay-menu-search-input-area.is-visible { display: flex; }
+    .overlay-menu-search-input-area input { 
+        flex-grow: 1; border: 1px solid #ccc; border-right: none; 
+        padding: 0.75rem 1rem; font-size: 1rem; border-radius: 0; outline: none;
+    }
+    .overlay-menu-search-input-area button { 
+        padding: 0.75rem 1rem; background-color: var(--brand-red); 
+        color: white; border-radius: 0; font-size: 1rem; 
+    }
+    .overlay-menu-body { flex-grow: 1; overflow-y: auto; padding-top: 1rem; padding-bottom: 2rem; }
+    .overlay-main-nav > ul {
+        display: flex; flex-wrap: wrap; justify-content: flex-start;
+        align-items: stretch; gap: 0.5rem;
+        padding: 0 var(--container-padding-mobile);
+        max-width: var(--container-max-width); margin: 0 auto;
+    }
+    .overlay-main-nav > ul > li { 
+        flex-basis: calc(33.333% - 0.34rem); min-width: 180px; 
+        box-sizing: border-box; margin-bottom: 0.5rem; 
+    }
+    .overlay-main-nav a.submenu-toggle-link {
+        display: flex; flex-direction: column; position: relative;
+        padding: 0.6rem 0.5rem; text-decoration: none; color: var(--brand-dark);
+        font-weight: 600; font-size: 0.9rem; background-color: var(--neutral-light);
+        border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        min-height: 60px; transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        height: 100%; 
+    }
+    .overlay-main-nav a.submenu-toggle-link:hover { background-color: #fdfdfd; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .overlay-main-nav a.submenu-toggle-link.active-l1 { 
+        box-shadow: 0 0 0 2px var(--brand-red), 0 2px 5px rgba(0,0,0,0.1); background-color: #fff7f7; 
+    }
+    .menu-item-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 0.2rem; }
+    .menu-item-tagline { font-size: 0.75rem; color: var(--neutral-gray); line-height: 1.3; font-weight: normal; }
+    .expand-icon { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: #999; transition: transform 0.2s ease; }
+    
+    .overlay-header-search-container {
+        display: none; width: 300px; margin-right: 0.5rem;
+    }
+    .overlay-header-search-input {
+        flex-grow: 1; border: 1px solid #ccc; border-right: none;
+        padding: 0.5rem; font-size: 0.85rem; border-radius: 3px 0 0 3px;
+        outline: none; width: calc(100% - 40px);
+    }
+    .overlay-header-search-button {
+        padding: 0.5rem; background-color: var(--brand-red); color: white;
+        border-radius: 0 3px 3px 0; font-size: 0.85rem; width: 40px;
+    }
+
+    .full-width-l2-content {
+        background-color: #fff0f0; border-top: 1px solid #ffe0e0;
+        border-bottom: 1px solid #ffe0e0; display: none; 
+        width: 100%; box-sizing: border-box; clear: both; 
+        max-height: 0; opacity: 0; overflow: hidden;
+        transition: max-height 0.35s ease-in-out, opacity 0.3s ease-in-out, 
+                    padding-top 0.35s ease-in-out, padding-bottom 0.35s ease-in-out,
+                    margin-top 0.35s ease-in-out; 
+    }
+    .full-width-l2-content.is-open { display: block; opacity: 1; padding: 0.5rem var(--container-padding-mobile); margin-top: 0.2rem; box-shadow: 0 2px 6px rgba(211, 47, 47, 0.1); }
+    .full-width-l2-content .l2-columns-wrapper { display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; max-width: var(--container-max-width); margin: 0 auto; padding-top: 0.2rem; }
+    .full-width-l2-content .l2-column {
+        list-style: none; padding: 0; margin: 0;
+        flex-basis: calc(33.333% - 0.67rem); min-width: 180px; box-sizing: border-box;
+    }
+    .full-width-l2-content .l2-column li { margin-bottom: 0.1rem; }
+    .full-width-l2-content .l2-column a { 
+        display: block; padding: 0.5rem 0.25rem; font-size: 0.85rem; color: var(--brand-dark); 
+        text-decoration: none; border-radius: 3px; white-space: normal; 
+        transition: background-color 0.2s ease, color 0.2s ease;
+        font-weight: 500;
+    }
+    .full-width-l2-content .l2-column a:hover { background-color: rgba(211, 47, 47, 0.08); color: var(--brand-red); }
+
+    .content-section { max-width: var(--container-max-width); margin: 2rem auto; padding: 0 var(--container-padding-mobile); }
+    
+    .site-footer { background-color: var(--footer-background); padding: var(--footer-padding); margin-top: 2rem; border-top: 1px solid var(--light-border); }
+    .footer-container { max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--container-padding-mobile); text-align: center; box-sizing: border-box; }
+    .utility-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2rem; margin-bottom: 2rem; }
+    .utility-links a { color: var(--neutral-gray); font-size: 0.9rem; transition: color 0.2s ease; }
+    .utility-links a:hover { color: var(--brand-dark); }
+    .app-social-links { display: flex; flex-direction: column; align-items: center; margin: 1.5rem 0; gap: 1.5rem; }
+    .app-links { display: flex; gap: 1.5rem; justify-content: center; }
+    .app-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--brand-dark); font-size: 0.9rem; padding: 0.5rem 0.75rem; border-radius: 4px; background-color: rgba(0,0,0,0.05); transition: background-color 0.2s ease; }
+    .app-link:hover { background-color: rgba(0,0,0,0.1); text-decoration: none; }
+    .social-links { display: flex; gap: 1rem; justify-content: center; }
+    .social-link { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background-color: rgba(0,0,0,0.05); color: var(--brand-dark); font-size: 1rem; transition: background-color 0.2s ease, color 0.2s ease; }
+    .social-link:hover { background-color: var(--brand-red); color: white; text-decoration: none; }
+    .copyright { margin-top: 1.5rem; font-size: 0.85rem; color: var(--neutral-gray); }
+
+    @media (min-width: 992px) { /* Desktop */
+        :root { --container-padding-desktop: 1.5rem; }
+        .header-container, .overlay-menu-top-bar { padding: 12px var(--container-padding-desktop); min-height: 64px;}
+        .featured-container { padding: 0 var(--container-padding-desktop); }
+        .mobile-overlay-featured-bar { display: none !important; } 
+        .overlay-header-search-container { display: flex; width: 300px; }
+        .overlay-search-icon { display: none; }
+        .overlay-menu-search-input-area { display: none; }
+        .desktop-nav-links { display: flex; }
+        .mobile-menu-bar { display: none; }
+        .overlay-top-actions, .overlay-menu-top-bar .main-nav { gap: 1rem; } 
+        .overlay-menu-search-input-area { padding-left: var(--container-padding-desktop); padding-right: var(--container-padding-desktop); }
+        .overlay-menu-body { padding: 1rem 0; } 
+        .overlay-main-nav > ul { padding: 0 var(--container-padding-desktop); gap: 0.75rem 1rem; }
+        .overlay-main-nav > ul > li { flex-basis: calc(33.333% - 0.67rem); margin-bottom: 0.5rem;}
+        .overlay-main-nav a.submenu-toggle-link { padding: 0.5rem 0.75rem;}
+        .full-width-l2-content.is-open { padding: 0.5rem var(--container-padding-desktop); margin-top: 0.2rem; }
+        .full-width-l2-content .l2-column { flex-basis: calc(33.333% - 0.67rem); min-width: 200px; }
+        .content-section, .footer-container { padding: 0 var(--container-padding-desktop); }
+        .overlay-menu-top-bar .logo img { height: 36px; } /* Ensure overlay logo matches main on desktop if desired */
+    }
+    @media (min-width: 768px) and (max-width: 991.98px) { /* Tablet */
+        .header-container, .overlay-menu-top-bar { padding: 12px var(--container-padding-mobile); min-height: 56px;}
+        .desktop-featured-bar { display: block; } 
+        .mobile-overlay-featured-bar { display: none !important; } 
+        .featured-container { padding: 0 var(--container-padding-mobile); }
+        .overlay-header-search-container { display: flex; width: 220px; }
+        .overlay-search-icon { display: none; }
+        .overlay-menu-search-input-area { display: none; }
+        .desktop-nav-links { display: flex; } 
+        .mobile-menu-bar { display: none; }
+        .overlay-top-actions, .overlay-menu-top-bar .main-nav { gap: 0.5rem; }
+        .overlay-menu-top-bar .login-button, .overlay-menu-top-bar .epaper-main-header-button { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        .overlay-menu-top-bar .epaper-main-header-button .epaper-text { display: none; }
+        .overlay-menu-top-bar .overlay-search-icon { font-size: 1rem; padding: 0.5rem; }
+        .close-button-overlay-styled { font-size: 1.2rem; padding: 0.5rem; margin-left: 0.1rem;}
+        .overlay-menu-body { padding: 1rem 0; }
+        .overlay-main-nav > ul { gap: 0.75rem; }
+        .overlay-main-nav > ul > li { flex-basis: calc(50% - 0.375rem); margin-bottom: 0.5rem; }
+        .full-width-l2-content.is-open { margin-top: 0.5rem; }
+        .full-width-l2-content .l2-column { flex-basis: calc(50% - 0.5rem); }
+        .overlay-menu-top-bar .logo img { height: 32px; } /* Tablet overlay logo size */
+    }
+    @media (max-width: 767.98px) { /* Mobile */
+        .featured-container {
+            justify-content: flex-start; 
+        }
+        .header-container, .overlay-menu-top-bar { padding: 12px; min-height: auto; }
+        /* .logo a, .overlay-menu-top-bar .logo a { font-size: 1.5rem; } /* Text logo, not needed for SVG */
+        .logo img, .overlay-menu-top-bar .logo img { /* SVG logo size for mobile */
+            height: 28px; 
+        }
+        .desktop-featured-bar { display: none; } 
+        .mobile-overlay-featured-bar { display: block; } 
+        .desktop-nav-links { display: none; }
+        .mobile-menu-bar { display: block; }
+        .hamburger-icon { margin-left: 0; }
+        .search-icon { display: none; } 
+        .epaper-text { display: none; } 
+        .epaper-main-header-button { padding: 0.5rem; width: 32px; height: 32px; border-radius: 50%; justify-content: center; }
+        .login-button { padding: 0.4rem 0.8rem; }
+        .overlay-top-actions, .overlay-menu-top-bar .main-nav { gap: 0.25rem; }
+        .overlay-menu-top-bar .login-button { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+        .overlay-menu-top-bar .epaper-main-header-button { padding: 0.5rem; width: 32px; height: 32px; }
+        .overlay-menu-top-bar .overlay-search-icon { font-size: 1rem; padding: 0.5rem; }
+        .close-button-overlay-styled { font-size: 1.2rem; width: 36px; height: 36px; margin-left: 0; padding: 0.4rem;}
+        .overlay-menu-body { padding-top: 0; padding-bottom: 1rem; } 
+        .overlay-main-nav > ul { flex-direction: column; flex-wrap: nowrap; padding: 0; gap: 0; }
+        .overlay-main-nav > ul > li { flex-basis: auto; width: 100%; margin-bottom: 0; border: none; border-bottom: 1px solid #eee; }
+        .overlay-main-nav > ul > li:last-child { border-bottom: none; }
+         .overlay-main-nav a.submenu-toggle-link {
+            border: none; border-radius: 0; min-height: auto;
+            padding: 1rem var(--container-padding-mobile); background-color: transparent; 
+            box-shadow: none;
+        }
+        .overlay-main-nav a.submenu-toggle-link.active-l1 { background-color: var(--menu-hover-bg); box-shadow: none;}
+        .full-width-l2-content { margin-top: 0; border-bottom: 1px solid #ffe0e0; }
+        .full-width-l2-content.is-open { padding: 0.5rem 0; margin-top:0; }
+        .full-width-l2-content .l2-columns-wrapper { flex-direction: column; gap: 0; }
+        .full-width-l2-content .l2-column { 
+            padding: 0 calc(var(--container-padding-mobile) + 1rem); 
+            min-width: auto; width: 100%; flex-basis: auto;
+        }
+         .full-width-l2-content .l2-column li { margin-bottom: 0;}
+         .full-width-l2-content .l2-column a { padding: 0.6rem 0; }
+    }
+</style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">
+    <a href="#" id="mainLogoAnchor"> <!-- Changed ID for clarity, or you can remove it if not specifically targeted -->
+        <img src="pv logo.svg" alt="Prajavani Home" id="mainLogoImage">
+    </a>
+</div>
+                <nav class="desktop-nav-links" id="desktopNav"><ul id="desktopNavUl"></ul></nav>
+            </div>
+            <div class="header-right">
+                <nav class="main-nav">
+                    <button class="icon-button search-icon" aria-label="Search"><i class="fas fa-search"></i></button>
+                    <a href="/login" class="button login-button">Login</a>
+                    <a href="/epaper" class="button epaper-main-header-button"><i class="fas fa-newspaper"></i> <span class="epaper-text">Read ePaper</span></a>
+                    <button id="hamburgerBtn" class="icon-button hamburger-icon" aria-label="Open Menu" aria-expanded="false"><i class="fas fa-bars"></i></button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-menu-bar" id="mobileMenuBar">
+        <div class="menu-container"><nav class="mobile-nav-links"><ul id="mobileNavUl"></ul></nav></div>
+    </div>
+
+    <!-- NEW: Desktop Featured Bar -->
+    <nav class="featured-bar desktop-featured-bar" id="desktopFeaturedBar" aria-label="Featured Topics">
+        <div class="featured-container">
+    <i class="fas fa-bullhorn featured-icon-label" id="desktopFeaturedIconLabel" aria-hidden="true"></i>
+    <ul id="desktopFeaturedUl">
+        <!-- JS will populate this -->
+    </ul>
+</div>
+    </nav>
+
+    <div id="overlayMenu" class="overlay-menu-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="overlayMenuTitleLogo">
+        <div class="overlay-menu-top-bar">
+            <div class="header-left">
+                <div class="logo overlay-logo-main" id="overlayMenuTitleLogo">
+    <a href="#" id="overlayLogoAnchor"> <!-- Changed ID for clarity -->
+        <img src="pv logo.svg" alt="Prajavani Home" id="overlayLogoImage">
+    </a>
+</div>
+            </div>
+            <div class="header-right">
+                <nav class="main-nav overlay-actions-nav"> 
+                    <div class="overlay-header-search-container">
+                        <input type="text" class="overlay-header-search-input" placeholder="ಪ್ರಜಾವಾಣಿಯಲ್ಲಿ ಹುಡುಕಿ...">
+                        <button class="overlay-header-search-button"><i class="fas fa-search"></i></button>
+                    </div>
+                    <button class="icon-button overlay-search-icon" aria-label="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <a href="/login" class="button login-button overlay-login-button">Login</a>
+                    <a href="/epaper" class="button epaper-main-header-button overlay-epaper-button">
+                        <i class="fas fa-newspaper"></i> <span class="epaper-text">Read ePaper</span>
+                    </a>
+                    <button id="closeMenuBtn" class="icon-button close-button-overlay-styled" aria-label="Close Menu"> 
+                        <i class="fas fa-times"></i>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- NEW: Mobile Overlay Featured Bar -->
+        <nav class="featured-bar mobile-overlay-featured-bar" id="mobileOverlayFeaturedBar" aria-label="Featured Topics">
+            <div class="featured-container">
+    <i class="fas fa-bullhorn featured-icon-label" id="mobileOverlayFeaturedIconLabel" aria-hidden="true"></i>
+    <ul id="mobileOverlayFeaturedUl">
+        <!-- JS will populate this -->
+    </ul>
+</div>
+        </nav>
+
+        <div class="overlay-menu-search-input-area">
+            <input type="text" id="overlaySearchInput" placeholder="ಪ್ರಜಾವಾಣಿಯಲ್ಲಿ ಹುಡುಕಿ...">
+            <button class="icon-button"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="overlay-menu-body">
+            <nav class="overlay-main-nav">
+                <ul id="overlayNavUl"></ul>
+            </nav>
+            <div id="fullWidthL2ContentHolder" class="full-width-l2-content"></div>
+        </div>
+    </div>
+
+
+    <main>
+        <div class="content-section">
+            <p>Main content goes here. Scroll down to see sticky header.</p>
+            <p>currentMenuLanguage = 'en';</p>
+<p>populateAllMenus(); // This also calls populateFeaturedBars()</p>
+<p>updateStaticUIText();</p>
+<p>initDesktopNavInteractions();</p>
+            <div style="height: 1000px;"></div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <div class="footer-container">
+           <nav class="utility-links">
+               <a href="#">About Us</a> <a href="#">Contact Us</a> <a href="#">The Printers Mysore</a> <a href="#">Deccan Herald</a> <a href="#">Sudha</a> <a href="#">Mayura</a> <a href="#">Epaper</a> <a href="#">Privacy Policy</a> <a href="#">Terms & Conditions</a> <a href="#">Disclaimer</a>
+           </nav>
+           <div class="app-social-links">
+               <div class="app-links">
+                   <a href="#" class="app-link"><i class="fab fa-google-play"></i> Google Play</a>
+                   <a href="#" class="app-link"><i class="fab fa-apple"></i> App Store</a>
+               </div>
+               <div class="social-links">
+                   <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a> <a href="#" class="social-link"><i class="fab fa-twitter"></i></a> <a href="#" class="social-link"><i class="fab fa-instagram"></i></a> <a href="#" class="social-link"><i class="fab fa-youtube"></i></a> <a href="#" class="social-link"><i class="fab fa-telegram"></i></a> <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+               </div>
+           </div>
+           <div class="copyright"> © 2024 The Printers (Mysore) Private Ltd. </div>
+       </div>
+   </footer>
+
+    <script id="menuDataSource" type="application/json">
+    [
+      {"kannadaTitle":"ಸುದ್ದಿ","englishTitle":"News","id":"news","href":"/news","subItems":[{"kannadaTitle":"ರಾಷ್ಟ್ರೀಯ","englishTitle":"National","href":"/news/national"},{"kannadaTitle":"ವಿದೇಶ","englishTitle":"World","href":"/news/world"},{"kannadaTitle":"ರಾಜ್ಯ","englishTitle":"State","href":"/news/state"},{"kannadaTitle":"ಫ್ಯಾಕ್ಟ್ ಚೆಕ್","englishTitle":"Fact Check","href":"/news/fact-check"},{"kannadaTitle":"ಸಮಗ್ರ ಮಾಹಿತಿ","englishTitle":"Explainer","href":"/news/explainer"}],"tagline":"National, World, State & more","showInMobileBar":true},
+      {"kannadaTitle":"ಜಿಲ್ಲೆ","englishTitle":"Districts","id":"districts","href":"/districts","subItems":[{"kannadaTitle":"ಬೆಂಗಳೂರು","englishTitle":"Bengaluru City","href":"/districts/bengaluru-city"},{"kannadaTitle":"ಬೆಂಗಳೂರು ಗ್ರಾಮಾಂತರ","englishTitle":"Bengaluru Rural","href":"/districts/bengaluru-rural"},{"kannadaTitle":"ಕಲಬುರಗಿ","englishTitle":"Kalaburagi","href":"/districts/kalaburagi"},{"kannadaTitle":"ಚಾಮರಾಜನಗರ","englishTitle":"Chamarajanagara","href":"/districts/chamarajanagara"},{"kannadaTitle":"ರಾಮನಗರ","englishTitle":"Ramanagara","href":"/districts/ramanagara"},{"kannadaTitle":"ಚಿಕ್ಕಬಳ್ಳಾಪುರ","englishTitle":"Chikkaballapur","href":"/districts/chikkaballapur"},{"kannadaTitle":"ಕೋಲಾರ","englishTitle":"Kolar","href":"/districts/kolar"},{"kannadaTitle":"ತುಮಕೂರು","englishTitle":"Tumakuru","href":"/districts/tumakuru"},{"kannadaTitle":"ಮೈಸೂರು","englishTitle":"Mysuru","href":"/districts/mysuru"},{"kannadaTitle":"ಮಂಡ್ಯ","englishTitle":"Mandya","href":"/districts/mandya"},{"kannadaTitle":"ಕೊಡಗು","englishTitle":"Kodagu","href":"/districts/kodagu"},{"kannadaTitle":"ಹಾಸನ","englishTitle":"Hasana","href":"/districts/hasana"},{"kannadaTitle":"ದಕ್ಷಿಣ ಕನ್ನಡ","englishTitle":"Dakshina Kannada","href":"/districts/dakshina-kannada"},{"kannadaTitle":"ಉಡುಪಿ","englishTitle":"Udupi","href":"/districts/udupi"},{"kannadaTitle":"ಚಿಕ್ಕಮಗಳೂರು","englishTitle":"Chikkamagaluru","href":"/districts/chikkamagaluru"},{"kannadaTitle":"ದಾವಣಗೆರೆ","englishTitle":"Davanagere","href":"/districts/davanagere"},{"kannadaTitle":"ಶಿವಮೊಗ್ಗ","englishTitle":"Shivamogga","href":"/districts/shivamogga"},{"kannadaTitle":"ಚಿತ್ರದುರ್ಗ","englishTitle":"Chitradurga","href":"/districts/chitradurga"},{"kannadaTitle":"ಧಾರವಾಡ","englishTitle":"Dharwad","href":"/districts/dharwad"},{"kannadaTitle":"ಗದಗ","englishTitle":"Gadaga","href":"/districts/gadaga"},{"kannadaTitle":"ಹಾವೇರಿ","englishTitle":"Haveri","href":"/districts/haveri"},{"kannadaTitle":"ವಿಜಯಪುರ","englishTitle":"Vijayapura","href":"/districts/vijayapura"},{"kannadaTitle":"ಬೆಳಗಾವಿ","englishTitle":"Belagavi","href":"/districts/belagavi"},{"kannadaTitle":"ಬಾಗಲಕೋಟೆ","englishTitle":"Bagalkot","href":"/districts/bagalkot"},{"kannadaTitle":"ಉತ್ತರ ಕನ್ನಡ","englishTitle":"Uttara Kannada","href":"/districts/uttara-kannada"},{"kannadaTitle":"ಬಳ್ಳಾರಿ","englishTitle":"Ballari","href":"/districts/ballari"},{"kannadaTitle":"ಬೀದರ್","englishTitle":"Bidar","href":"/districts/bidar"},{"kannadaTitle":"ಕೊಪ್ಪಳ","englishTitle":"Koppal","href":"/districts/koppal"},{"kannadaTitle":"ಯಾದಗಿರಿ","englishTitle":"Yadagiri","href":"/districts/yadagiri"},{"kannadaTitle":"ರಾಯಚೂರು","englishTitle":"Raichur","href":"/districts/raichur"},{"kannadaTitle":"ವಿಜಯನಗರ","englishTitle":"Vijayanagara","href":"/districts/vijayanagara"}],"tagline":"Bengaluru City, Bengaluru Rural, Kalaburagi & more","showInMobileBar":true},
+      {"kannadaTitle":"ಅಭಿಮತ","englishTitle":"Op-Ed","id":"op-ed","href":"/op-ed","subItems":[{"kannadaTitle":"ಸಂಪಾದಕೀಯ","englishTitle":"Editorial","href":"/op-ed/editorial"},{"kannadaTitle":"ಲೇಖನಗಳು","englishTitle":"Articles","href":"/op-ed/articles"},{"kannadaTitle":"ವ್ಯಕ್ತಿಚಿತ್ರ","englishTitle":"Profile","href":"/op-ed/profile"},{"kannadaTitle":"ಪ್ರಜಾವಾಣಿ ಕಡತಗಳಿಂದ","englishTitle":"Prajavani Archives","href":"/op-ed/prajavani-archives"},{"kannadaTitle":"ಚುರುಮುರಿ","englishTitle":"Churumuri","href":"/op-ed/churumuri"},{"kannadaTitle":"ಚರ್ಚೆ","englishTitle":"Discussion","href":"/op-ed/discussion"},{"kannadaTitle":"ವಾಚಕರ ವಾಣಿ","englishTitle":"Reader's Letter","href":"/op-ed/readers-letter"},{"kannadaTitle":"ಸಂಗತ","englishTitle":"Opinion","href":"/op-ed/opinion"},{"kannadaTitle":"ಕನ್ನಡ ಧ್ವನಿ","englishTitle":"Podcast","href":"/op-ed/podcast"},{"kannadaTitle":"ಸಂದರ್ಶನ","englishTitle":"Interview","href":"/op-ed/interview"},{"kannadaTitle":"ಅಂಕಣಗಳು","englishTitle":"Columns","href":"/op-ed/columns"}],"tagline":"Editorial, Articles, Profile & more","showInMobileBar":true},
+      {"kannadaTitle":"ಭವಿಷ್ಯ","englishTitle":"Horoscope","id":"horoscope","href":"/horoscope","subItems":[{"kannadaTitle":"ದಿನ ಭವಿಷ್ಯ","englishTitle":"Daily Horoscope","href":"/horoscope/daily-horoscope"},{"kannadaTitle":"ವಾರ ಭವಿಷ್ಯ","englishTitle":"Weekly Horoscope","href":"/horoscope/weekly-horoscope"},{"kannadaTitle":"ಮಾಸ ಭವಿಷ್ಯ","englishTitle":"Monthly Horoscope","href":"/horoscope/monthly-horoscope"},{"kannadaTitle":"ವರ್ಷ ಭವಿಷ್ಯ","englishTitle":"Yearly Horoscope","href":"/horoscope/yearly-horoscope"},{"kannadaTitle":"ಪಂಚಾಂಗ","englishTitle":"Panchanga","href":"/horoscope/panchanga"},{"kannadaTitle":"ಜ್ಯೋತಿಷ","englishTitle":"Astrology","href":"/horoscope/astrology"},{"kannadaTitle":"ವಾಸ್ತು","englishTitle":"Vaastu","href":"/horoscope/vaastu"}],"tagline":"Daily Horoscope, Weekly Horoscope, Monthly Horoscope & more","showInMobileBar":true},
+      {"kannadaTitle":"ಸಿನಿಮಾ ಜಗತ್ತು","englishTitle":"Entertainment","id":"entertainment","href":"/entertainment","subItems":[{"kannadaTitle":"ಸಿನಿ ಸುದ್ದಿ","englishTitle":"Cinema News","href":"/entertainment/cinema-news"},{"kannadaTitle":"ಸಿನಿಮಾ ವಿಮರ್ಶೆ","englishTitle":"Movie Review","href":"/entertainment/movie-review"},{"kannadaTitle":"ಟಿವಿ","englishTitle":"TV","href":"/entertainment/tv"},{"kannadaTitle":"ರಂಗಭೂಮಿ","englishTitle":"Theatre","href":"/entertainment/theatre"},{"kannadaTitle":"ಡಿಜಿಟಲ್-ಒಟಿಟಿ","englishTitle":"Digital-OTT","href":"/entertainment/digital-ott"}],"tagline":"Cinema News, Movie Review, TV & more","showInMobileBar":false},
+      {"kannadaTitle":"ಜೀವನಶೈಲಿ","englishTitle":"Lifestyle","id":"lifestyle","href":"/lifestyle","subItems":[{"kannadaTitle":"ಆರೋಗ್ಯ","englishTitle":"Health","href":"/lifestyle/health"},{"kannadaTitle":"ಆಹಾರ","englishTitle":"Food","href":"/lifestyle/food"},{"kannadaTitle":"ಕಲೆ ಮತ್ತು ಸಾಹಿತ್ಯ","englishTitle":"Art & Literature","href":"/lifestyle/art-and-literature"},{"kannadaTitle":"ನಮ್ಮ ಮನೆ","englishTitle":"My Home","href":"/lifestyle/my-home"},{"kannadaTitle":"ಸುತ್ತಾಟ","englishTitle":"Leisure & Travel","href":"/lifestyle/leisure-and-travel"},{"kannadaTitle":"ಸೌಂದರ್ಯ","englishTitle":"Beauty","href":"/lifestyle/beauty"},{"kannadaTitle":"ಪರಿಸರ","englishTitle":"Environment","href":"/lifestyle/environment"},{"kannadaTitle":"ಸಮಾಜ ಮತ್ತು ಸಂಸ್ಕೃತಿ","englishTitle":"Community & Culture","href":"/lifestyle/community-and-culture"},{"kannadaTitle":"ಕೃಷಿ","englishTitle":"Agriculture","href":"/lifestyle/agriculture"},{"kannadaTitle":"ಆಟೋಮೊಬೈಲ್","englishTitle":"Automobile","href":"/lifestyle/automobile"}],"tagline":"Health, Food, Art & Literature & more","showInMobileBar":true},
+      {"kannadaTitle":"ವಾಣಿಜ್ಯ","englishTitle":"Business","id":"business","href":"/business","subItems":[{"kannadaTitle":"ವಾಣಿಜ್ಯ ಸುದ್ದಿ","englishTitle":"Commerce News","href":"/business/commerce-news"},{"kannadaTitle":"ಹಣಕಾಸು ವಿಚಾರ","englishTitle":"Personal Finance","href":"/business/personal-finance"},{"kannadaTitle":"ಷೇರು ಮಾರುಕಟ್ಟೆ","englishTitle":"Stock Market","href":"/business/stock-market"},{"kannadaTitle":"ಬಜೆಟ್","englishTitle":"Budget","href":"/business/budget"},{"kannadaTitle":"ನವೋದ್ಯಮ","englishTitle":"Startup","href":"/business/startup"},{"kannadaTitle":"ಪ್ರಶ್ನೋತ್ತರ","englishTitle":"Q&A","href":"/business/qanda"},{"kannadaTitle":"ಬಂಡವಾಳ ಮಾರುಕಟ್ಟೆ","englishTitle":"Capital Market","href":"/business/capital-market"},{"kannadaTitle":"ಹಣಕಾಸು ಸಾಕ್ಷರತೆ","englishTitle":"Finance Literacy","href":"/business/finance-literacy"},{"kannadaTitle":"ಷೇರು ಸಮಾಚಾರ","englishTitle":"Share News","href":"/business/share-news"}],"tagline":"Commerce News, Personal Finance, Stock Market & more","showInMobileBar":false},
+      {"kannadaTitle":"ಕ್ರೀಡೆ","englishTitle":"Sports","id":"sports","href":"/sports","subItems":[{"kannadaTitle":"ಕ್ರಿಕೆಟ್","englishTitle":"Cricket","href":"/sports/cricket"},{"kannadaTitle":"ಫುಟ್‌ಬಾಲ್","englishTitle":"Football","href":"/sports/football"},{"kannadaTitle":"ಟೆನಿಸ್","englishTitle":"Tennis","href":"/sports/tennis"},{"kannadaTitle":"ಇತರೆ ಕ್ರೀಡೆಗಳು","englishTitle":"Other Sports","href":"/sports/other-sports"},{"kannadaTitle":"ವಿಶ್ವಕಪ್","englishTitle":"World Cup","href":"/sports/world-cup"},{"kannadaTitle":"ಕ್ರೀಡಾಂಕಣ","englishTitle":"Sports Column/Arena","href":"/sports/sports-columnarena"}],"tagline":"Cricket, Football, Tennis & more","showInMobileBar":false},
+      {"kannadaTitle":"ತಂತ್ರಜ್ಞาน","englishTitle":"Technology","id":"technology","href":"/technology","subItems":[{"kannadaTitle":"ಗ್ಯಾಜೆಟ್ ಸುದ್ದಿ","englishTitle":"Gadget News","href":"/technology/gadget-news"},{"kannadaTitle":"ತಂತ್ರಜ್ಞಾನ ಟಿಪ್ಸ್","englishTitle":"Tech Tips","href":"/technology/tech-tips"},{"kannadaTitle":"ಸಾಮಾಜಿಕ ಮಾಧ್ಯಮ","englishTitle":"Social Media","href":"/technology/social-media"},{"kannadaTitle":"ಗ್ಯಾಜೆಟ್ ವಿಮರ್ಶೆ","englishTitle":"Gadget Review","href":"/technology/gadget-review"},{"kannadaTitle":"ವಿಜ್ಞಾನ","englishTitle":"Science","href":"/technology/science"},{"kannadaTitle":"ವೈರಲ್","englishTitle":"Viral","href":"/technology/viral"}],"tagline":"Gadget News, Tech Tips, Social Media & more","showInMobileBar":false},
+      {"kannadaTitle":"ಶಿಕ್ಷಣ ಮತ್ತು ಉದ್ಯೋಗ","englishTitle":"Education & Career","id":"education-and-career","href":"/education-and-career","subItems":[{"kannadaTitle":"ಶಿಕ್ಷಣ","englishTitle":"Education","href":"/education-and-career/education"},{"kannadaTitle":"ಮಾರ್ಗದರ್ಶಿ","englishTitle":"Guide","href":"/education-and-career/guide"},{"kannadaTitle":"ಉದ್ಯೋಗ","englishTitle":"Career","href":"/education-and-career/career"}],"tagline":"Education, Guide, Career","showInMobileBar":false},
+      {"kannadaTitle":"ಪ್ರಜಾ ಮತ","englishTitle":"Elections","id":"elections","href":"/elections","subItems":[{"kannadaTitle":"ಅಭ್ಯರ್ಥಿಯ ಜೊತೆ","englishTitle":"With Candidate","href":"/elections/with-candidate"},{"kannadaTitle":"ಚುನಾವಣಾ ರಿಂಗಣ-2014","englishTitle":"Elections-2014","href":"/elections/elections-2014"},{"kannadaTitle":"ಲೋಕ ಚರಿತ್ರೆ","englishTitle":"Lok Sabha History","href":"/elections/lok-sabha-history"},{"kannadaTitle":"ವೋಟ್ ಹಾಕಿ","englishTitle":"Cast Your Vote","href":"/elections/cast-your-vote"},{"kannadaTitle":"ಕ್ಷೇತ್ರ ಪರಿಚಯ","englishTitle":"Constituency Introduction","href":"/elections/constituency-introduction"},{"kannadaTitle":"ಕೇಳ್ರಪ್ಪೋ ಕೇಳಿ","englishTitle":"Voter's Alert","href":"/elections/voters-alert"},{"kannadaTitle":"ಮತ ಮೆಲುಕು","englishTitle":"Vote Reflection","href":"/elections/vote-reflection"},{"kannadaTitle":"ಚುನಾವಣಾ ಹಿನ್ನೋಟ","englishTitle":"Election Flashback","href":"/elections/election-flashback"},{"kannadaTitle":"ಚುನಾವಣಾ ರಿಂಗಣ-2018","englishTitle":"Elections-2018","href":"/elections/elections-2018"},{"kannadaTitle":"ಚುನಾವಣಾ ಯಾತ್ರೆ","englishTitle":"Election Yatra","href":"/elections/election-yatra"},{"kannadaTitle":"ಚುನಾವಣಾ ಭಾರತ","englishTitle":"India Elections","href":"/elections/india-elections"},{"kannadaTitle":"ಚುನಾವಣಾ ಚುಟುಕು","englishTitle":"Election Snippets","href":"/elections/election-snippets"},{"kannadaTitle":"ಚುನಾವಣಾ ಕರ್ನಾಟಕ","englishTitle":"Karnataka Elections","href":"/elections/karnataka-elections"},{"kannadaTitle":"ಚುನಾವಣಾ ಕದನ ಕಣ","englishTitle":"Poll Battle","href":"/elections/poll-battle"},{"kannadaTitle":"ಪ್ರಜಾ ಮತ 2018","englishTitle":"Prajamata 2018","href":"/elections/prajamata-2018"}],"tagline":"With Candidate, Elections-2014, Lok Sabha History & more","showInMobileBar":false},
+      {"kannadaTitle":"ಇತರೆ","englishTitle":"Others","id":"others","href":"/others","subItems":[{"kannadaTitle":"ವಿಶೇಷ","englishTitle":"Specials","href":"/others/specials"},{"kannadaTitle":"ಮಲ್ಟಿಮೀಡಿಯಾ","englishTitle":"Multimedia","href":"/others/multimedia"},{"kannadaTitle":"ವಿವಿಧ","englishTitle":"Miscellaneous Features/Brands","href":"/others/miscellaneous-featuresbrands"}],"tagline":"Specials, Multimedia, Miscellaneous Features/Brands","showInMobileBar":false}
+    ]
+    </script>
+
+<script>
+    // --- Global DOM References ---
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const overlayMenu = document.getElementById('overlayMenu');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const desktopNavContainer = document.getElementById('desktopNav');
+    const desktopNavUl = document.getElementById('desktopNavUl');
+    const mobileNavUl = document.getElementById('mobileNavUl');
+    const overlayNavUl = document.getElementById('overlayNavUl');
+    const fullWidthL2ContentHolder = document.getElementById('fullWidthL2ContentHolder');
+    const overlaySearchIconBtn = document.querySelector('.overlay-menu-top-bar .overlay-search-icon');
+    const overlaySearchInput = document.getElementById('overlaySearchInput');
+    const overlaySearchArea = document.querySelector('.overlay-menu-search-input-area');
+
+    // Featured Bar DOM References
+    const desktopFeaturedBar = document.getElementById('desktopFeaturedBar');
+    const desktopFeaturedUl = document.getElementById('desktopFeaturedUl');
+    // const desktopFeaturedLabel = document.getElementById('desktopFeaturedLabel'); // Removed as using icon only for label
+    const mobileOverlayFeaturedBar = document.getElementById('mobileOverlayFeaturedBar');
+    const mobileOverlayFeaturedUl = document.getElementById('mobileOverlayFeaturedUl');
+    // const mobileOverlayFeaturedLabel = document.getElementById('mobileOverlayFeaturedLabel'); // Removed as using icon only for label
+
+    let menuData = [];
+    let currentMenuLanguage = 'kn';
+    let currentlyOpenL1Toggle = null;
+    let currentlyOpenL1ItemId = null;
+
+    const uiStrings = {
+        // logoText was removed as logo is now an SVG image
+        searchPlaceholder: {
+            kn: "ಪ್ರಜಾವಾಣಿಯಲ್ಲಿ ಹುಡುಕಿ...",
+            en: "Search Prajavani..."
+        }
+        // featuredLabel was removed as the label is now a static icon in HTML
+    };
+
+    const featuredItemsData = [
+        { title: "Festivals in Karnataka", href: "/specials/karnataka-festivals", kannadaTitle: "ಕರ್ನಾಟಕದ ಹಬ್ಬಗಳು" },
+        { title: "Operation Sindoor", href: "/investigations/operation-sindoor", kannadaTitle: "ಆಪರೇಷನ್ ಸಿಂಧೂರ" },
+        { title: "Prajavani Premium", href: "/premium", kannadaTitle: "ಪ್ರಜಾವಾಣಿ ಪ್ರೀಮಿಯಂ" },
+        { title: "Horoscope", href: "/horoscope", kannadaTitle: "ಭವಿಷ್ಯ ವಾಣಿ" }
+    ];
+
+    // --- Helper Functions ---
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => { clearTimeout(timeout); func(...args); };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    function getMenuItemTitle(item) { return currentMenuLanguage === 'kn' ? item.kannadaTitle : item.englishTitle; }
+    function getSubItemTitle(subItem) { return currentMenuLanguage === 'kn' ? subItem.kannadaTitle : subItem.englishTitle; }
+    function getMenuItemTagline(item) {
+        if (item.tagline && currentMenuLanguage === 'en') return item.tagline;
+        const subItemsForTag = item.subItems || [];
+        const defaultTitle = currentMenuLanguage === 'kn' ? item.kannadaTitle : item.englishTitle;
+        if (subItemsForTag.length === 0) return defaultTitle;
+        const subTitles = subItemsForTag.slice(0, 2).map(si => currentMenuLanguage === 'kn' ? si.kannadaTitle : si.englishTitle);
+        let tagline = subTitles.join(', ');
+        if (subItemsForTag.length > 2) tagline += (currentMenuLanguage === 'kn' ? " ಮತ್ತು ಇನ್ನಷ್ಟು" : " & more");
+        return tagline;
+    }
+
+    function getFeaturedItemTitle(item) { // This provides text for the featured item links (the chips)
+        return currentMenuLanguage === 'kn' ? item.kannadaTitle : item.title;
+    }
+
+    function updateStaticUIText() {
+        const overlayHeaderSearchInput = document.querySelector('.overlay-header-search-input');
+        const mobileOverlaySearchInput = document.getElementById('overlaySearchInput');
+
+        // Logo text updates were removed as logo is now an SVG
+        if (overlayHeaderSearchInput) overlayHeaderSearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
+        if (mobileOverlaySearchInput) mobileOverlaySearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
+    }
+
+    // --- Featured Bar Population ---
+    function populateFeaturedBars() {
+        // Populate Desktop Bar
+        if (desktopFeaturedUl) { // Condition only relies on the UL element existing
+            desktopFeaturedUl.innerHTML = ''; // Clear existing items
+            // The icon label is static in HTML, no JS update needed for it
+            featuredItemsData.forEach(item => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = item.href;
+                a.textContent = getFeaturedItemTitle(item); // Set text for the link (chip)
+                // Highlight Premium item with red background
+                if (item.title.includes('Premium') || item.kannadaTitle.includes('ಪ್ರೀಮಿಯಂ')) {
+                    a.classList.add('featured-highlight');
+                }
+                // For accessibility, if the link itself doesn't have descriptive text (e.g., if it were an icon too)
+                // you would set aria-label: a.setAttribute('aria-label', getFeaturedItemTitle(item));
+                li.appendChild(a);
+                desktopFeaturedUl.appendChild(li);
+            });
+        } else {
+            console.warn("desktopFeaturedUl not found. Cannot populate desktop featured bar.");
+        }
+
+        // Populate Mobile Overlay Bar
+        if (mobileOverlayFeaturedUl) { // Condition only relies on the UL element existing
+            mobileOverlayFeaturedUl.innerHTML = ''; // Clear existing items
+            // The icon label is static in HTML, no JS update needed for it
+            featuredItemsData.forEach(item => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.textContent = getFeaturedItemTitle(item); // Set text for the link (chip)
+                a.href = item.href;
+                // Highlight Premium item with red background
+                if (item.title.includes('Premium') || item.kannadaTitle.includes('ಪ್ರೀಮಿಯಂ')) {
+                    a.classList.add('featured-highlight');
+                }
+                li.appendChild(a);
+                mobileOverlayFeaturedUl.appendChild(li);
+            });
+        } else {
+            console.warn("mobileOverlayFeaturedUl not found. Cannot populate mobile overlay featured bar.");
+        }
+    }
+
+    // --- Desktop Nav Population & Interactions ---
+    function populateDesktopNav() {
+        if (!desktopNavContainer || !desktopNavUl) return;
+        desktopNavUl.innerHTML = '';
+        const containerWidth = desktopNavContainer.clientWidth;
+        if (containerWidth === 0 && window.innerWidth >= 768) { /* console.warn relevant warning */ }
+
+        const MAX_DESKTOP_SUBMENU_HEIGHT_PERCENTAGE = 0.75;
+        const viewportHeight = window.innerHeight;
+        const approxHeaderHeight = desktopNavUl.closest('.site-header')?.offsetHeight || 60;
+        const availableHeightForDesktopSubmenu = Math.min(
+            viewportHeight * MAX_DESKTOP_SUBMENU_HEIGHT_PERCENTAGE,
+            viewportHeight - approxHeaderHeight - 20
+        );
+        const approxDesktopItemHeight = 35;
+
+        for (const item of menuData) {
+            const li = document.createElement('li');
+            li.classList.add('has-submenu');
+            const a = document.createElement('a');
+            a.href = item.href; a.textContent = getMenuItemTitle(item);
+            a.setAttribute('aria-haspopup', 'true'); a.setAttribute('aria-expanded', 'false');
+            li.appendChild(a);
+
+            if (item.subItems && item.subItems.length > 0) {
+                const megaMenuPanel = document.createElement('div');
+                megaMenuPanel.classList.add('mega-menu-panel');
+                let currentColumnUl = document.createElement('ul');
+                currentColumnUl.classList.add('sub-menu-column');
+                megaMenuPanel.appendChild(currentColumnUl);
+                let currentColumnHeight = 0;
+                item.subItems.forEach((subItem) => {
+                    if (currentColumnHeight + approxDesktopItemHeight > availableHeightForDesktopSubmenu && currentColumnUl.children.length > 0) {
+                        currentColumnUl = document.createElement('ul');
+                        currentColumnUl.classList.add('sub-menu-column');
+                        megaMenuPanel.appendChild(currentColumnUl);
+                        currentColumnHeight = 0;
+                    }
+                    const subLi = document.createElement('li');
+                    const subA_L2 = document.createElement('a');
+                    subA_L2.href = subItem.href; subA_L2.textContent = getSubItemTitle(subItem);
+                    subLi.appendChild(subA_L2); currentColumnUl.appendChild(subLi);
+                    currentColumnHeight += approxDesktopItemHeight;
+                });
+                li.appendChild(megaMenuPanel);
+            }
+            desktopNavUl.appendChild(li);
+            if (desktopNavUl.scrollWidth > containerWidth && containerWidth > 0) {
+                if (desktopNavUl.contains(li)) { desktopNavUl.removeChild(li); }
+                break;
+            }
+        }
+    }
+    function initDesktopNavInteractions() {
+        const desktopNavLis = document.querySelectorAll('#desktopNavUl > li.has-submenu');
+        let leaveTimeout;
+        desktopNavLis.forEach(li => {
+            const link = li.querySelector('a');
+            const panel = li.querySelector('.mega-menu-panel');
+            if (!link || !panel) return;
+            li.addEventListener('mouseenter', () => {
+                clearTimeout(leaveTimeout);
+                desktopNavLis.forEach(otherLi => {
+                    if (otherLi !== li && otherLi.classList.contains('submenu-visible')) {
+                        otherLi.classList.remove('submenu-visible');
+                        const otherLink = otherLi.querySelector('a');
+                        if(otherLink) otherLink.setAttribute('aria-expanded', 'false');
+                    }
+                });
+                li.classList.add('submenu-visible');
+                link.setAttribute('aria-expanded', 'true');
+            });
+            li.addEventListener('mouseleave', () => {
+                leaveTimeout = setTimeout(() => {
+                    if (li.classList.contains('submenu-visible')) {
+                        li.classList.remove('submenu-visible');
+                        link.setAttribute('aria-expanded', 'false');
+                    }
+                }, 200);
+            });
+        });
+     }
+
+    // --- Mobile Nav Population ---
+    function populateMobileNav() {
+        if (!mobileNavUl) return;
+        mobileNavUl.innerHTML = '';
+        menuData.filter(item => item.showInMobileBar).forEach(item => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = item.href;
+            a.textContent = getMenuItemTitle(item);
+            if (item.id === 'news' && mobileNavUl.children.length === 0) a.classList.add('active');
+            li.appendChild(a);
+            mobileNavUl.appendChild(li);
+        });
+    }
+
+    // --- Overlay Menu Population & Interactions ---
+    function populateOverlayMenu() {
+        if (!overlayNavUl) return;
+        overlayNavUl.innerHTML = '';
+        menuData.forEach(item => {
+            const li = document.createElement('li');
+            li.classList.add('has-submenu');
+            const mainLink = document.createElement('a');
+            mainLink.href = item.href;
+            mainLink.classList.add('submenu-toggle-link');
+            mainLink.setAttribute('aria-expanded', 'false');
+            mainLink.dataset.itemId = item.id;
+            const titleSpan = document.createElement('span');
+            titleSpan.classList.add('menu-item-title');
+            titleSpan.textContent = getMenuItemTitle(item);
+            mainLink.appendChild(titleSpan);
+            const taglineSpan = document.createElement('span');
+            taglineSpan.classList.add('menu-item-tagline');
+            taglineSpan.textContent = getMenuItemTagline(item);
+            mainLink.appendChild(taglineSpan);
+            if (item.subItems && item.subItems.length > 0) {
+                const icon = document.createElement('i');
+                icon.classList.add('fas', 'fa-chevron-down', 'expand-icon');
+                mainLink.appendChild(icon);
+            }
+            li.appendChild(mainLink);
+            overlayNavUl.appendChild(li);
+        });
+        if (fullWidthL2ContentHolder && fullWidthL2ContentHolder.parentNode !== overlayMenu.querySelector('.overlay-menu-body')) {
+             overlayMenu.querySelector('.overlay-menu-body').appendChild(fullWidthL2ContentHolder);
+        }
+        if(fullWidthL2ContentHolder) {
+            fullWidthL2ContentHolder.classList.remove('is-open');
+            fullWidthL2ContentHolder.style.maxHeight = null;
+            fullWidthL2ContentHolder.innerHTML = '';
+        }
+        initOverlayMenuInteractions();
+    }
+
+    function renderL2Content(l1ItemId, clickedL1LiElement) {
+        if (!fullWidthL2ContentHolder || !overlayNavUl) return;
+
+        fullWidthL2ContentHolder.innerHTML = '';
+        if (fullWidthL2ContentHolder.parentNode) {
+            fullWidthL2ContentHolder.parentNode.removeChild(fullWidthL2ContentHolder);
+        }
+        fullWidthL2ContentHolder.classList.remove('is-open');
+        fullWidthL2ContentHolder.style.maxHeight = null;
+        fullWidthL2ContentHolder.style.paddingTop = '0';
+        fullWidthL2ContentHolder.style.paddingBottom = '0';
+        fullWidthL2ContentHolder.style.marginTop = '0';
+
+        const l1ItemData = menuData.find(item => item.id === l1ItemId);
+        if (!l1ItemData || !l1ItemData.subItems || l1ItemData.subItems.length === 0) {
+            return;
+        }
+
+        const l2Wrapper = document.createElement('div');
+        l2Wrapper.classList.add('l2-columns-wrapper');
+        const itemsPerColumn = Math.ceil(l1ItemData.subItems.length / 3);
+        let currentColumnUl;
+
+        l1ItemData.subItems.forEach((subItem, index) => {
+            if (index % itemsPerColumn === 0) {
+                currentColumnUl = document.createElement('ul');
+                currentColumnUl.classList.add('l2-column');
+                l2Wrapper.appendChild(currentColumnUl);
+            }
+            const subLi = document.createElement('li');
+            const subA = document.createElement('a');
+            subA.href = subItem.href; subA.textContent = getSubItemTitle(subItem);
+            subLi.appendChild(subA); currentColumnUl.appendChild(subLi);
+        });
+        fullWidthL2ContentHolder.appendChild(l2Wrapper);
+
+        const l1Items = Array.from(overlayNavUl.children);
+        let endOfRowLi = null;
+        if (clickedL1LiElement) {
+            const topOffsetOfClickedRow = clickedL1LiElement.offsetTop;
+            for (let i = 0; i < l1Items.length; i++) {
+                if (l1Items[i].offsetTop === topOffsetOfClickedRow) {
+                    endOfRowLi = l1Items[i];
+                }
+                if (l1Items[i].offsetTop > topOffsetOfClickedRow && endOfRowLi) break;
+            }
+        }
+        if (!endOfRowLi && l1Items.length > 0) endOfRowLi = l1Items[l1Items.length - 1];
+
+        if (endOfRowLi && endOfRowLi.parentNode === overlayNavUl) {
+            overlayNavUl.insertBefore(fullWidthL2ContentHolder, endOfRowLi.nextSibling);
+        } else {
+            overlayNavUl.appendChild(fullWidthL2ContentHolder);
+        }
+
+        void fullWidthL2ContentHolder.offsetWidth;
+        setTimeout(() => {
+            fullWidthL2ContentHolder.classList.add('is-open');
+            fullWidthL2ContentHolder.style.paddingTop = '';
+            fullWidthL2ContentHolder.style.paddingBottom = '';
+            fullWidthL2ContentHolder.style.marginTop = '0.2rem';
+            fullWidthL2ContentHolder.style.maxHeight = fullWidthL2ContentHolder.scrollHeight + "px";
+        }, 10);
+    }
+
+    function initOverlayMenuInteractions() {
+        const overlayL1Toggles = document.querySelectorAll('#overlayNavUl .submenu-toggle-link');
+
+        overlayL1Toggles.forEach(toggle => {
+            const newToggle = toggle.cloneNode(true);
+            if (toggle.parentNode) toggle.parentNode.replaceChild(newToggle, toggle);
+            else return;
+
+            newToggle.addEventListener('click', function(event) {
+                event.preventDefault();
+                const clickedL1LiElement = this.closest('li');
+                const l1ItemId = this.dataset.itemId;
+                const l1ItemData = menuData.find(item => item.id === l1ItemId);
+                const isNoSubmenuItem = !l1ItemData || !l1ItemData.subItems || l1ItemData.subItems.length === 0;
+                const isCurrentlyActive = this.classList.contains('active-l1');
+
+                if (currentlyOpenL1Toggle && currentlyOpenL1Toggle !== this) {
+                    currentlyOpenL1Toggle.classList.remove('active-l1');
+                    currentlyOpenL1Toggle.setAttribute('aria-expanded', 'false');
+                    const prevIcon = currentlyOpenL1Toggle.querySelector('.expand-icon');
+                    if (prevIcon) prevIcon.style.transform = 'rotate(0deg)';
+                }
+                if (currentlyOpenL1ItemId !== l1ItemId || isCurrentlyActive) {
+                    fullWidthL2ContentHolder.classList.remove('is-open');
+                    fullWidthL2ContentHolder.style.maxHeight = null;
+                }
+
+                if (isNoSubmenuItem) {
+                    currentlyOpenL1Toggle = null; currentlyOpenL1ItemId = null; return;
+                }
+                if (!isCurrentlyActive) {
+                    renderL2Content(l1ItemId, clickedL1LiElement);
+                    this.classList.add('active-l1');
+                    this.setAttribute('aria-expanded', 'true');
+                    const icon = this.querySelector('.expand-icon');
+                    if (icon) icon.style.transform = 'rotate(180deg)';
+                    currentlyOpenL1Toggle = this; currentlyOpenL1ItemId = l1ItemId;
+                } else {
+                    this.classList.remove('active-l1');
+                    this.setAttribute('aria-expanded', 'false');
+                    const icon = this.querySelector('.expand-icon');
+                    if (icon) icon.style.transform = 'rotate(0deg)';
+                    currentlyOpenL1Toggle = null; currentlyOpenL1ItemId = null;
+                }
+            });
+        });
+    }
+
+    function initOverlayTopBarActions() {
+        if (overlaySearchIconBtn && overlaySearchArea) {
+            overlaySearchIconBtn.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    overlaySearchArea.classList.toggle('is-visible');
+                    if (overlaySearchArea.classList.contains('is-visible')) {
+                        overlaySearchInput.focus();
+                    }
+                } else {
+                    const headerSearchInput = document.querySelector('.overlay-header-search-input');
+                    if (headerSearchInput) {
+                        headerSearchInput.focus();
+                    }
+                }
+            });
+        }
+    }
+
+    // --- Menu Opening/Closing & Initialization ---
+    function openMenu() {
+        overlayMenu.classList.add('is-open');
+        overlayMenu.setAttribute('aria-hidden', 'false');
+        hamburgerBtn.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        if (window.innerWidth >= 768 && overlaySearchInput) overlaySearchInput.focus();
+    }
+    function closeMenu() {
+        overlayMenu.classList.remove('is-open');
+        overlayMenu.setAttribute('aria-hidden', 'true');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        if (overlaySearchArea) {
+            overlaySearchArea.classList.remove('is-visible');
+        }
+        if (fullWidthL2ContentHolder) {
+            fullWidthL2ContentHolder.classList.remove('is-open');
+            fullWidthL2ContentHolder.style.maxHeight = null;
+            const overlayBody = overlayMenu.querySelector('.overlay-menu-body');
+            if (overlayBody && fullWidthL2ContentHolder.parentNode && fullWidthL2ContentHolder.parentNode !== overlayBody) {
+                 fullWidthL2ContentHolder.parentNode.removeChild(fullWidthL2ContentHolder);
+                 overlayBody.appendChild(fullWidthL2ContentHolder);
+            }
+        }
+        if (currentlyOpenL1Toggle) {
+            currentlyOpenL1Toggle.classList.remove('active-l1');
+            currentlyOpenL1Toggle.setAttribute('aria-expanded', 'false');
+            const icon = currentlyOpenL1Toggle.querySelector('.expand-icon');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+        currentlyOpenL1Toggle = null;
+        currentlyOpenL1ItemId = null;
+    }
+    hamburgerBtn.addEventListener('click', openMenu);
+    closeMenuBtn.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && overlayMenu.classList.contains('is-open')) {
+            closeMenu();
+        }
+    });
+
+    function populateAllMenus() {
+        populateDesktopNav();
+        populateMobileNav();
+        populateOverlayMenu();
+        populateFeaturedBars(); // Populate featured bars
+    }
+    function initializeMenus() {
+        try {
+            const menuDataSource = document.getElementById('menuDataSource');
+            if (!menuDataSource) { console.error("Menu data source script tag not found."); return; }
+            menuData = JSON.parse(menuDataSource.textContent);
+
+            populateAllMenus(); 
+            updateStaticUIText();
+            initDesktopNavInteractions();
+            initOverlayTopBarActions();
+
+            const debouncedDesktopNavUpdate = debounce(() => {
+                populateDesktopNav();
+                initDesktopNavInteractions();
+            }, 250);
+            window.addEventListener('resize', debouncedDesktopNavUpdate);
+        } catch (error) {
+            console.error("Could not load or parse menu data:", error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeMenus);
+</script>
+</body>
+</html>
