@@ -132,20 +132,36 @@
         padding: 0.6rem; color: var(--brand-dark); display: inline-flex; 
         align-items: center; justify-content: center; font-size: 1.1rem; 
         border-radius: 50%; line-height: 1; margin: 0; height: auto;
+        transition: all 0.2s ease;
     }
-    .icon-button:hover { color: var(--brand-red); background-color: var(--menu-hover-bg); }
+    .icon-button:hover { 
+        color: var(--brand-red); 
+        background-color: var(--menu-hover-bg); 
+    }
     .login-button, .epaper-main-header-button { 
         color: var(--button-primary-text); padding: 0 1.2rem; border-radius: 20px; 
-        font-weight: 600; font-size: 1rem; transition: background-color 0.2s ease; 
+        font-weight: 600; font-size: 1rem; 
+        transition: background-color 0.2s ease; 
         font-family: 'PV Headline', 'Noto Sans', sans-serif;
         white-space: nowrap; text-align: center; line-height: 1.2; margin: 0;
         display: inline-flex; align-items: center; justify-content: center; 
         height: 36px; min-height: 36px;
     }
     .login-button { background-color: var(--button-primary-bg); }
-    .login-button:hover { background-color: #b71c1c; }
+    .login-button:hover { 
+        background-color: #b71c1c; 
+        color: #ffffff;
+    }
+    .login-button.logged-in-state { background-color: var(--brand-red); color: var(--button-primary-text); } /* Same red as login */
+    .login-button.logged-in-state:hover { 
+        background-color: #b71c1c; 
+        color: #ffffff;
+    }
     .epaper-main-header-button { background-color: var(--button-secondary-bg); color: var(--button-secondary-text); display: inline-flex; align-items: center; gap: 0.4rem; }
-    .epaper-main-header-button:hover { background-color: #e3aa00; }
+    .epaper-main-header-button:hover { 
+        background-color: #e3aa00; 
+        color: var(--brand-dark);
+    }
     .hamburger-icon { font-size: 1.4rem; margin-left: 0.25rem; }
 
     .mobile-menu-bar { background-color: var(--neutral-light); border-bottom: 1px solid var(--light-border); display: block; width: 100%; }
@@ -730,7 +746,7 @@
             <div class="header-right">
                 <nav class="main-nav">
                     <button class="icon-button search-icon" aria-label="Search"><i class="fas fa-search"></i></button>
-                    <a href="/login" class="button login-button">Login</a>
+                    <a href="/login" class="button login-button" aria-label="Login to Account">Login</a>
                     <a href="/epaper" class="button epaper-main-header-button"><i class="fas fa-newspaper"></i> <span class="epaper-text">Read ePaper</span></a>
                     <button id="hamburgerBtn" class="icon-button hamburger-icon" aria-label="Open Menu" aria-expanded="false"><i class="fas fa-bars"></i></button>
                 </nav>
@@ -770,7 +786,7 @@
                     <button class="icon-button overlay-search-icon" aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
-                    <a href="/login" class="button login-button overlay-login-button">Login</a>
+                    <a href="/login" class="button login-button overlay-login-button" aria-label="Login to Account">Login</a>
                     <a href="/epaper" class="button epaper-main-header-button overlay-epaper-button">
                         <i class="fas fa-newspaper"></i> <span class="epaper-text">Read ePaper</span>
                     </a>
@@ -864,9 +880,9 @@
             <i class="fas fa-podcast"></i>
             <span>Podcasts</span>
         </a>
-        <a href="/horoscope" class="mobile-nav-item">
-            <i class="fas fa-star"></i>
-            <span>Horoscope</span>
+        <a href="/epaper" class="mobile-nav-item">
+            <i class="fas fa-newspaper"></i>
+            <span>ePaper</span>
         </a>
         <button class="mobile-nav-item mobile-nav-menu-btn" id="mobileBottomMenuBtn">
             <i class="fas fa-bars"></i>
@@ -917,6 +933,7 @@
     let currentMenuLanguage = 'kn';
     let currentlyOpenL1Toggle = null;
     let currentlyOpenL1ItemId = null;
+    let isLoggedIn = false; // Track login state
 
     const uiStrings = {
         // logoText was removed as logo is now an SVG image
@@ -927,6 +944,10 @@
         loginButton: {
             kn: "ಲಾಗಿನ್",
             en: "Login"
+        },
+        myAccountButton: {
+            kn: "ನನ್ನ ಖಾತೆ",
+            en: "My Account"
         },
         epaperButton: {
             kn: "ಇ-ಪೇಪರ್",
@@ -941,9 +962,9 @@
                 kn: "ಪಾಡ್‌ಕಾಸ್ಟ್",
                 en: "Podcasts"
             },
-            horoscope: {
-                kn: "ಭವಿಷ್ಯ",
-                en: "Horoscope"
+            epaper: {
+                kn: "ಇ-ಪೇಪರ್",
+                en: "ePaper"
             },
             menu: {
                 kn: "ಮೆನು",
@@ -990,6 +1011,44 @@
         return currentMenuLanguage === 'kn' ? item.kannadaTitle : item.title;
     }
 
+    // --- Login State Management ---
+    function toggleLoginState() {
+        isLoggedIn = !isLoggedIn;
+        
+        // Update button URLs and visual state
+        const loginButtons = document.querySelectorAll('.login-button');
+        loginButtons.forEach(button => {
+            if (isLoggedIn) {
+                button.href = '/account';
+                button.setAttribute('aria-label', 'Access My Account');
+                button.classList.add('logged-in-state');
+            } else {
+                button.href = '/login';
+                button.setAttribute('aria-label', 'Login to Account');
+                button.classList.remove('logged-in-state');
+            }
+        });
+        
+        updateStaticUIText(); // Refresh all UI text including login buttons
+        console.log('Login state changed to:', isLoggedIn ? 'Logged In (My Account)' : 'Logged Out (Login)');
+    }
+    
+    function initLoginButtons() {
+        // Add click handlers to all login buttons
+        const loginButtons = document.querySelectorAll('.login-button');
+        loginButtons.forEach(button => {
+            // Remove existing listener if any
+            button.removeEventListener('click', handleLoginClick);
+            // Add new listener
+            button.addEventListener('click', handleLoginClick);
+        });
+    }
+    
+    function handleLoginClick(event) {
+        event.preventDefault();
+        toggleLoginState();
+    }
+
     // --- Language Switching Function ---
     function switchLanguage(newLanguage) {
         if (newLanguage === 'kn' || newLanguage === 'en') {
@@ -1002,8 +1061,9 @@
         }
     }
     
-    // Make switchLanguage globally accessible for testing
+    // Make switchLanguage and toggleLoginState globally accessible for testing
     window.switchLanguage = switchLanguage;
+    window.toggleLoginState = toggleLoginState;
 
     function updateStaticUIText() {
         const overlayHeaderSearchInput = document.querySelector('.overlay-header-search-input');
@@ -1018,8 +1078,10 @@
         const mainLoginButtons = document.querySelectorAll('.login-button');
         const mainEpaperButtons = document.querySelectorAll('.epaper-main-header-button .epaper-text');
         
+        const loginText = isLoggedIn ? uiStrings.myAccountButton[currentMenuLanguage] : uiStrings.loginButton[currentMenuLanguage];
+        
         mainLoginButtons.forEach(button => {
-            button.textContent = uiStrings.loginButton[currentMenuLanguage];
+            button.textContent = loginText;
         });
         
         mainEpaperButtons.forEach(span => {
@@ -1030,12 +1092,12 @@
         if (mobileBottomNav) {
             const homeSpan = mobileBottomNav.querySelector('a[href="/"] span');
             const podcastsSpan = mobileBottomNav.querySelector('a[href="/op-ed/podcast"] span');
-            const horoscopeSpan = mobileBottomNav.querySelector('a[href="/horoscope"] span');
+            const epaperSpan = mobileBottomNav.querySelector('a[href="/epaper"] span');
             const menuSpan = mobileBottomNav.querySelector('button span');
             
             if (homeSpan) homeSpan.textContent = uiStrings.bottomNavigation.home[currentMenuLanguage];
             if (podcastsSpan) podcastsSpan.textContent = uiStrings.bottomNavigation.podcasts[currentMenuLanguage];
-            if (horoscopeSpan) horoscopeSpan.textContent = uiStrings.bottomNavigation.horoscope[currentMenuLanguage];
+            if (epaperSpan) epaperSpan.textContent = uiStrings.bottomNavigation.epaper[currentMenuLanguage];
             if (menuSpan) menuSpan.textContent = uiStrings.bottomNavigation.menu[currentMenuLanguage];
         }
         
@@ -1483,7 +1545,10 @@
         populateFeaturedBars(); // Populate featured bars
         
         // Apply Kannada font sizes after menus are populated
-        setTimeout(() => applyKannadaFontSizes(), 10);
+        setTimeout(() => {
+            applyKannadaFontSizes();
+            initLoginButtons(); // Reinitialize login buttons after menu updates
+        }, 10);
     }
     function initializeMenus() {
         try {
@@ -1495,6 +1560,7 @@
             updateStaticUIText(); // This now includes applyKannadaFontSizes()
             initDesktopNavInteractions();
             initOverlayTopBarActions();
+            initLoginButtons(); // Initialize login button functionality
 
             const debouncedDesktopNavUpdate = debounce(() => {
                 populateDesktopNav();
