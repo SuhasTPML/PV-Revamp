@@ -35,7 +35,7 @@
     }
     
     .kannada-text.small-text {
-        font-size: 1.15em; /* 15% increase for small Kannada text */
+        font-size: 1.05em; /* 5% increase for small Kannada text - keeps hierarchy */
     }
     
     .kannada-text.large-text {
@@ -99,7 +99,7 @@
     .desktop-nav-links > ul { display: flex; align-items: stretch; gap: 0.5rem; height: 100%; width: max-content; }
     .desktop-nav-links > ul > li { position: relative; display: flex; align-items: center; flex-shrink: 0; }
     .desktop-nav-links > ul > li > a { 
-        color: var(--brand-dark); text-decoration: none; font-size: 0.9rem; font-weight: 600; 
+        color: var(--brand-dark); text-decoration: none; font-size: 1rem; font-weight: 600; 
         font-family: 'PV Headline', 'Noto Sans', sans-serif;
         white-space: nowrap; padding: 0.5rem 0.75rem; border-bottom: 3px solid transparent; 
         transition: color 0.2s ease, border-color 0.2s ease; display: flex; align-items: center; 
@@ -135,11 +135,12 @@
     }
     .icon-button:hover { color: var(--brand-red); background-color: var(--menu-hover-bg); }
     .login-button, .epaper-main-header-button { 
-        color: var(--button-primary-text); padding: 0.6rem 1.2rem; border-radius: 20px; 
-        font-weight: 600; font-size: 0.85rem; transition: background-color 0.2s ease; 
+        color: var(--button-primary-text); padding: 0 1.2rem; border-radius: 20px; 
+        font-weight: 600; font-size: 1rem; transition: background-color 0.2s ease; 
         font-family: 'PV Headline', 'Noto Sans', sans-serif;
-        white-space: nowrap; text-align: center; line-height: 1; margin: 0;
-        display: inline-flex; align-items: center; justify-content: center; height: auto;
+        white-space: nowrap; text-align: center; line-height: 1.2; margin: 0;
+        display: inline-flex; align-items: center; justify-content: center; 
+        height: 36px; min-height: 36px;
     }
     .login-button { background-color: var(--button-primary-bg); }
     .login-button:hover { background-color: #b71c1c; }
@@ -239,10 +240,13 @@
     /* --- Overlay Menu UI --- */
     .overlay-menu-panel { 
         position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--neutral-light); 
-        z-index: 1100; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; 
+        z-index: 1100; opacity: 0; visibility: hidden; 
+        transition: opacity 0.3s ease, visibility 0.3s ease; 
         display: flex; flex-direction: column; 
     }
-    .overlay-menu-panel.is-open { opacity: 1; visibility: visible; }
+    .overlay-menu-panel.is-open { 
+        opacity: 1; visibility: visible; 
+    }
     
     .overlay-menu-top-bar {
         display: flex; align-items: center; justify-content: space-between;
@@ -269,17 +273,29 @@
         background-color: var(--neutral-light); flex-shrink: 0;
         max-width: var(--container-max-width); margin: 0 auto;
         width: 100%;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
     }
-    .overlay-menu-search-input-area.is-visible { display: flex; }
+    .overlay-menu-search-input-area.is-visible { 
+        display: flex; 
+        transform: translateX(0);
+    }
     .overlay-menu-search-input-area input { 
         flex-grow: 1; border: 1px solid #ccc; border-right: none; 
-        padding: 0.75rem 1rem; font-size: 1rem; border-radius: 0; outline: none;
+        padding: 0.75rem 1rem; font-size: 1rem; border-radius: 25px 0 0 25px; outline: none;
     }
     .overlay-menu-search-input-area button { 
         padding: 0.75rem 1rem; background-color: var(--brand-red); 
-        color: white; border-radius: 0; font-size: 1rem; 
+        color: white; border-radius: 0 25px 25px 0; font-size: 1rem; 
     }
-    .overlay-menu-body { flex-grow: 1; overflow-y: auto; padding-top: 1rem; padding-bottom: 2rem; }
+    .overlay-menu-body { 
+        flex-grow: 1; overflow-y: auto; padding-top: 1rem; padding-bottom: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+    .overlay-menu-panel.is-open .overlay-menu-body {
+        transform: translateX(0);
+    }
     .overlay-main-nav > ul {
         display: flex; flex-wrap: wrap; justify-content: flex-start;
         align-items: stretch; gap: 0.5rem;
@@ -308,6 +324,7 @@
         letter-spacing: 0.02em; 
         margin-bottom: 0.2rem; 
         font-family: 'PV Headline', 'Noto Sans', sans-serif;
+        font-weight: 600;
     }
     .menu-item-tagline { 
         font-size: 0.75rem; 
@@ -323,12 +340,12 @@
     }
     .overlay-header-search-input {
         flex-grow: 1; border: 1px solid #ccc; border-right: none;
-        padding: 0.5rem; font-size: 0.85rem; border-radius: 3px 0 0 3px;
+        padding: 0.5rem; font-size: 0.85rem; border-radius: 20px 0 0 20px;
         outline: none; width: calc(100% - 40px);
     }
     .overlay-header-search-button {
         padding: 0.5rem; background-color: var(--brand-red); color: white;
-        border-radius: 0 3px 3px 0; font-size: 0.85rem; width: 40px;
+        border-radius: 0 20px 20px 0; font-size: 0.85rem; width: 40px;
     }
 
     .full-width-l2-content {
@@ -554,7 +571,7 @@
         .overlay-menu-search-input-area { display: none; }
         .desktop-nav-links { display: flex; }
         .mobile-menu-bar { display: none; }
-        .overlay-top-actions, .overlay-menu-top-bar .main-nav { gap: 1rem; } 
+        .overlay-menu-top-bar .main-nav { gap: 0.75rem; } 
         .overlay-menu-search-input-area { padding-left: var(--container-padding-desktop); padding-right: var(--container-padding-desktop); }
         .overlay-menu-body { padding: 1rem 0; } 
         .overlay-main-nav > ul { padding: 0 var(--container-padding-desktop); gap: 0.75rem 1rem; }
@@ -563,7 +580,7 @@
         .full-width-l2-content.is-open { padding: 0.5rem var(--container-padding-desktop); margin-top: 0.2rem; }
         .full-width-l2-content .l2-column { flex-basis: calc(33.333% - 0.67rem); min-width: 200px; }
         .content-section, .footer-container { padding: 0 var(--container-padding-desktop); }
-        .overlay-menu-top-bar .logo img { height: 36px; } /* Ensure overlay logo matches main on desktop if desired */
+        .overlay-menu-top-bar .logo img { height: 36px; }
         .overlay-follow-section { padding: 1.5rem var(--container-padding-desktop); }
         
         /* Make featured bar sticky on desktop */
@@ -577,6 +594,20 @@
         .desktop-featured-bar.hide-on-scroll {
             transform: translateY(-100%);
         }
+        
+        /* Desktop hamburger menu animation - expand from header */
+        .overlay-menu-body {
+            transform: translateY(-100%); /* Start above screen */
+        }
+        .overlay-menu-panel.is-open .overlay-menu-body {
+            transform: translateY(0); /* Slide down into view */
+        }
+        .overlay-menu-search-input-area {
+            transform: translateY(-100%);
+        }
+        .overlay-menu-search-input-area.is-visible {
+            transform: translateY(0);
+        }
     }
     @media (min-width: 768px) and (max-width: 991.98px) { /* Tablet */
         .header-container, .overlay-menu-top-bar { padding: 12px var(--container-padding-mobile); min-height: 56px;}
@@ -588,9 +619,8 @@
         .overlay-menu-search-input-area { display: none; }
         .desktop-nav-links { display: flex; } 
         .mobile-menu-bar { display: none; }
-        .overlay-top-actions, .overlay-menu-top-bar .main-nav { gap: 0.5rem; }
-        .overlay-menu-top-bar .login-button, .overlay-menu-top-bar .epaper-main-header-button { padding: 0.5rem 1rem; font-size: 0.8rem; }
-        .overlay-menu-top-bar .epaper-main-header-button .epaper-text { display: none; }
+        .overlay-menu-top-bar .main-nav { gap: 0.75rem; }
+
         .overlay-menu-top-bar .overlay-search-icon { font-size: 1rem; padding: 0.5rem; }
         .close-button-overlay-styled { font-size: 1.2rem; padding: 0.5rem; margin-left: 0.1rem;}
         .overlay-menu-body { padding: 1rem 0; }
@@ -598,7 +628,21 @@
         .overlay-main-nav > ul > li { flex-basis: calc(50% - 0.375rem); margin-bottom: 0.5rem; }
         .full-width-l2-content.is-open { margin-top: 0.5rem; }
         .full-width-l2-content .l2-column { flex-basis: calc(50% - 0.5rem); }
-        .overlay-menu-top-bar .logo img { height: 32px; } /* Tablet overlay logo size */
+        .overlay-menu-top-bar .logo img { height: 32px; }
+        
+        /* Tablet hamburger menu animation - expand from header */
+        .overlay-menu-body {
+            transform: translateY(-100%); /* Start above screen */
+        }
+        .overlay-menu-panel.is-open .overlay-menu-body {
+            transform: translateY(0); /* Slide down into view */
+        }
+        .overlay-menu-search-input-area {
+            transform: translateY(-100%);
+        }
+        .overlay-menu-search-input-area.is-visible {
+            transform: translateY(0);
+        }
     }
     @media (max-width: 767.98px) { /* Mobile */
         .featured-container {
@@ -615,12 +659,10 @@
         .mobile-menu-bar { display: block; }
         .hamburger-icon { margin-left: 0; }
         .search-icon { display: none; } 
-        .epaper-text { display: none; } 
-        .epaper-main-header-button { padding: 0.5rem; width: 32px; height: 32px; border-radius: 50%; justify-content: center; }
-        .login-button { padding: 0.4rem 0.8rem; }
-        .overlay-top-actions, .overlay-menu-top-bar .main-nav { gap: 0.25rem; }
-        .overlay-menu-top-bar .login-button { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
-        .overlay-menu-top-bar .epaper-main-header-button { padding: 0.5rem; width: 32px; height: 32px; }
+        .main-nav { gap: 0.25rem; }
+        .overlay-menu-top-bar .main-nav { gap: 0.25rem; }
+        .login-button { padding: 0 0.5rem; height: 30px; min-height: 30px; line-height: 1.2; }
+        .epaper-main-header-button { padding: 0 0.5rem; height: 30px; min-height: 30px; line-height: 1.2; }
         .overlay-menu-top-bar .overlay-search-icon { font-size: 1rem; padding: 0.5rem; }
         .close-button-overlay-styled { font-size: 1.2rem; width: 36px; height: 36px; margin-left: 0; padding: 0.4rem;}
         .overlay-menu-body { padding-top: 0; padding-bottom: 1rem; } 
@@ -882,6 +924,14 @@
             kn: "ಪ್ರಜಾವಾಣಿಯಲ್ಲಿ ಹುಡುಕಿ...",
             en: "Search Prajavani..."
         },
+        loginButton: {
+            kn: "ಲಾಗಿನ್",
+            en: "Login"
+        },
+        epaperButton: {
+            kn: "ಇ-ಪೇಪರ್",
+            en: "ePaper"
+        },
         bottomNavigation: {
             home: {
                 kn: "ಮುಖ್ಯ",
@@ -964,6 +1014,18 @@
         if (overlayHeaderSearchInput) overlayHeaderSearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
         if (mobileOverlaySearchInput) mobileOverlaySearchInput.placeholder = uiStrings.searchPlaceholder[currentMenuLanguage];
         
+        // Update login and ePaper buttons in main header
+        const mainLoginButtons = document.querySelectorAll('.login-button');
+        const mainEpaperButtons = document.querySelectorAll('.epaper-main-header-button .epaper-text');
+        
+        mainLoginButtons.forEach(button => {
+            button.textContent = uiStrings.loginButton[currentMenuLanguage];
+        });
+        
+        mainEpaperButtons.forEach(span => {
+            span.textContent = uiStrings.epaperButton[currentMenuLanguage];
+        });
+        
         // Update bottom navigation text
         if (mobileBottomNav) {
             const homeSpan = mobileBottomNav.querySelector('a[href="/"] span');
@@ -1044,6 +1106,11 @@
             // Follow us title in overlay menu
             document.querySelectorAll('.follow-title').forEach(title => {
                 title.classList.add('kannada-text');
+            });
+            
+            // Login and ePaper buttons
+            document.querySelectorAll('.login-button, .epaper-main-header-button .epaper-text').forEach(button => {
+                button.classList.add('kannada-text');
             });
         }
     }
