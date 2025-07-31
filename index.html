@@ -103,9 +103,13 @@
         font-family: 'PV Headline', 'Noto Sans', sans-serif;
         white-space: nowrap; padding: 0.5rem 0.75rem; border-bottom: 3px solid transparent; 
         transition: color 0.2s ease, border-color 0.2s ease; display: flex; align-items: center; 
-        gap: 0.3rem; height: 100%; line-height: 1; margin: 0;
+        gap: 0.3rem; height: 100%; line-height: 1; margin: 0; cursor: pointer;
     }
-    .desktop-nav-links > ul > li:hover > a, .desktop-nav-links > ul > li.submenu-visible > a { color: var(--brand-red); border-bottom-color: var(--brand-red); }
+    .desktop-nav-links > ul > li:hover > a { 
+        color: var(--brand-red); 
+        border-bottom-color: var(--brand-red);
+    }
+    .desktop-nav-links > ul > li.submenu-visible > a { color: var(--brand-red); border-bottom-color: var(--brand-red); }
     
     .mega-menu-panel {
         display: none; position: absolute; top: 100%; left: 0;
@@ -1242,8 +1246,10 @@
             const li = document.createElement('li');
             li.classList.add('has-submenu');
             const a = document.createElement('a');
-            a.href = item.href; a.textContent = getMenuItemTitle(item);
-            a.setAttribute('aria-haspopup', 'true'); a.setAttribute('aria-expanded', 'false');
+            a.href = item.href; 
+            a.textContent = getMenuItemTitle(item);
+            a.setAttribute('aria-haspopup', 'true'); 
+            a.setAttribute('aria-expanded', 'false');
             li.appendChild(a);
 
             if (item.subItems && item.subItems.length > 0) {
@@ -1277,33 +1283,61 @@
     }
     function initDesktopNavInteractions() {
         const desktopNavLis = document.querySelectorAll('#desktopNavUl > li.has-submenu');
-        let leaveTimeout;
+        
+        // Close all open menus
+        function closeAllMenus() {
+            desktopNavLis.forEach(li => {
+                li.classList.remove('submenu-visible');
+                const link = li.querySelector('a');
+                if (link) link.setAttribute('aria-expanded', 'false');
+            });
+        }
+        
+        // Handle click events on menu items
         desktopNavLis.forEach(li => {
             const link = li.querySelector('a');
             const panel = li.querySelector('.mega-menu-panel');
             if (!link || !panel) return;
-            li.addEventListener('mouseenter', () => {
-                clearTimeout(leaveTimeout);
+            
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                
+                const isCurrentlyOpen = li.classList.contains('submenu-visible');
+                
+                // Close all other menus first
                 desktopNavLis.forEach(otherLi => {
                     if (otherLi !== li && otherLi.classList.contains('submenu-visible')) {
                         otherLi.classList.remove('submenu-visible');
                         const otherLink = otherLi.querySelector('a');
-                        if(otherLink) otherLink.setAttribute('aria-expanded', 'false');
+                        if (otherLink) otherLink.setAttribute('aria-expanded', 'false');
                     }
                 });
-                li.classList.add('submenu-visible');
-                link.setAttribute('aria-expanded', 'true');
-            });
-            li.addEventListener('mouseleave', () => {
-                leaveTimeout = setTimeout(() => {
-                    if (li.classList.contains('submenu-visible')) {
-                        li.classList.remove('submenu-visible');
-                        link.setAttribute('aria-expanded', 'false');
-                    }
-                }, 200);
+                
+                // Toggle current menu
+                if (isCurrentlyOpen) {
+                    li.classList.remove('submenu-visible');
+                    link.setAttribute('aria-expanded', 'false');
+                } else {
+                    li.classList.add('submenu-visible');
+                    link.setAttribute('aria-expanded', 'true');
+                }
             });
         });
-     }
+        
+        // Close menus when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!desktopNavContainer.contains(event.target)) {
+                closeAllMenus();
+            }
+        });
+        
+        // Close menus on ESC key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeAllMenus();
+            }
+        });
+    }
 
     // --- Mobile Nav Population ---
     function populateMobileNav() {
