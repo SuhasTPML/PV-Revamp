@@ -110,7 +110,7 @@
         border-bottom-color: var(--brand-red);
     }
     .desktop-nav-links > ul > li.submenu-visible > a { color: var(--brand-red); border-bottom-color: var(--brand-red); }
-    /* Default News Highlighting */
+    /* Default Highlighting */
     .desktop-nav-links > ul > li.default-highlighted > a {
         color: var(--brand-red); 
         border-bottom-color: var(--brand-red);
@@ -186,7 +186,7 @@
         transition: color 0.2s ease, border-color 0.2s ease; width: 100%; 
     }
     .mobile-nav-links a:hover, .mobile-nav-links a.active { color: var(--brand-red); border-bottom-color: var(--brand-red); }
-    /* Default News Highlighting for Mobile */
+    /* Default Highlighting for Mobile */
     .mobile-nav-links a.default-highlighted {
         color: var(--brand-red); 
         border-bottom-color: var(--brand-red);
@@ -849,11 +849,9 @@
 
     <main>
         <div class="content-section">
-            <p>Main content goes here. Scroll down to see sticky header.</p>
-            <p>currentMenuLanguage = 'en';</p>
-<p>populateAllMenus(); // This also calls populateFeaturedBars()</p>
-<p>updateStaticUIText();</p>
-<p>initDesktopNavInteractions();</p>
+            <div id="placeholderContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
             <div style="height: 1000px;"></div>
         </div>
     </main>
@@ -948,7 +946,6 @@
     let currentlyOpenL1Toggle = null;
     let currentlyOpenL1ItemId = null;
     let isLoggedIn = false; // Track login state
-    let menuClickCounts = {}; // Track click counts for L1 items
 
     const uiStrings = {
         // logoText was removed as logo is now an SVG image
@@ -1256,16 +1253,12 @@
         for (const item of menuData) {
             const li = document.createElement('li');
             li.classList.add('has-submenu');
-            // Add default highlighting for news
-            if (item.id === 'news') {
-                li.classList.add('default-highlighted');
-            }
             const a = document.createElement('a');
             a.href = item.href; 
             a.textContent = getMenuItemTitle(item);
             a.setAttribute('aria-haspopup', 'true'); 
             a.setAttribute('aria-expanded', 'false');
-            a.dataset.itemId = item.id; // Add item ID for tracking
+            a.dataset.itemId = item.id; // Add item ID for dynamic highlighting
             li.appendChild(a);
 
             if (item.subItems && item.subItems.length > 0) {
@@ -1284,10 +1277,7 @@
                     }
                     const subLi = document.createElement('li');
                     const subA_L2 = document.createElement('a');
-                    // Navigate to L2 placeholder with section parameter
-                    const sectionParam = subItem.href.split('/').pop();
-                    subA_L2.href = `l2-placeholder.html.html?section=${sectionParam}`;
-                    subA_L2.textContent = getSubItemTitle(subItem);
+                    subA_L2.href = subItem.href; subA_L2.textContent = getSubItemTitle(subItem);
                     subLi.appendChild(subA_L2); currentColumnUl.appendChild(subLi);
                     currentColumnHeight += approxDesktopItemHeight;
                 });
@@ -1308,12 +1298,7 @@
             desktopNavLis.forEach(li => {
                 li.classList.remove('submenu-visible');
                 const link = li.querySelector('a');
-                if (link) {
-                    link.setAttribute('aria-expanded', 'false');
-                    // Reset click count when closing menu
-                    const itemId = link.dataset.itemId;
-                    if (itemId) menuClickCounts[itemId] = 0;
-                }
+                if (link) link.setAttribute('aria-expanded', 'false');
             });
         }
         
@@ -1326,46 +1311,22 @@
             link.addEventListener('click', (event) => {
                 event.preventDefault();
                 
-                const itemId = link.dataset.itemId;
                 const isCurrentlyOpen = li.classList.contains('submenu-visible');
                 
-                // Initialize click count if not exists
-                if (!menuClickCounts[itemId]) {
-                    menuClickCounts[itemId] = 0;
-                }
+                // Close all other menus first
+                desktopNavLis.forEach(otherLi => {
+                    if (otherLi !== li && otherLi.classList.contains('submenu-visible')) {
+                        otherLi.classList.remove('submenu-visible');
+                        const otherLink = otherLi.querySelector('a');
+                        if (otherLink) otherLink.setAttribute('aria-expanded', 'false');
+                    }
+                });
                 
-                // Check if this item has submenus
-                const hasSubmenus = panel && panel.children.length > 0;
-                
-                if (!hasSubmenus) {
-                    // No submenu, navigate directly
-                    window.location.href = `l1-placeholder.html.html?section=${itemId}`;
-                    return;
-                }
-                
-                menuClickCounts[itemId]++;
-                
-                if (menuClickCounts[itemId] === 1 && !isCurrentlyOpen) {
-                    // First click - show submenu
-                    // Close all other menus first
-                    desktopNavLis.forEach(otherLi => {
-                        if (otherLi !== li && otherLi.classList.contains('submenu-visible')) {
-                            otherLi.classList.remove('submenu-visible');
-                            const otherLink = otherLi.querySelector('a');
-                            if (otherLink) otherLink.setAttribute('aria-expanded', 'false');
-                            // Reset click count for other items
-                            const otherItemId = otherLink.dataset.itemId;
-                            if (otherItemId) menuClickCounts[otherItemId] = 0;
-                        }
-                    });
-                    
-                    li.classList.add('submenu-visible');
-                    link.setAttribute('aria-expanded', 'true');
-                } else if (menuClickCounts[itemId] >= 2 || isCurrentlyOpen) {
-                    // Second click or already open - navigate to L1 page
-                    window.location.href = `l1-placeholder.html.html?section=${itemId}`;
+                // Toggle current menu
+                if (isCurrentlyOpen) {
+                    li.classList.remove('submenu-visible');
+                    link.setAttribute('aria-expanded', 'false');
                 } else {
-                    // Fallback - show submenu
                     li.classList.add('submenu-visible');
                     link.setAttribute('aria-expanded', 'true');
                 }
@@ -1383,8 +1344,6 @@
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 closeAllMenus();
-                // Reset all click counts on ESC
-                menuClickCounts = {};
             }
         });
     }
@@ -1398,11 +1357,8 @@
             const a = document.createElement('a');
             a.href = item.href;
             a.textContent = getMenuItemTitle(item);
-            a.dataset.itemId = item.id; // Add item ID for tracking
-            // Add default highlighting for news (replace active with default-highlighted)
-            if (item.id === 'news') {
-                a.classList.add('default-highlighted');
-            }
+            a.dataset.itemId = item.id; // Add item ID for dynamic highlighting
+            // No automatic highlighting - will be set dynamically by placeholder content
             li.appendChild(a);
             mobileNavUl.appendChild(li);
         });
@@ -1478,10 +1434,7 @@
             }
             const subLi = document.createElement('li');
             const subA = document.createElement('a');
-            // Navigate to L2 placeholder with section parameter
-            const sectionParam = subItem.href.split('/').pop();
-            subA.href = `l2-placeholder.html.html?section=${sectionParam}`;
-            subA.textContent = getSubItemTitle(subItem);
+            subA.href = subItem.href; subA.textContent = getSubItemTitle(subItem);
             subLi.appendChild(subA); currentColumnUl.appendChild(subLi);
         });
         fullWidthL2ContentHolder.appendChild(l2Wrapper);
@@ -1664,6 +1617,128 @@
     }
 
     document.addEventListener('DOMContentLoaded', initializeMenus);
+    
+    // --- L2 Placeholder Page Content ---
+    function populateL2PlaceholderContent() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sectionParam = urlParams.get('section');
+        const placeholderContent = document.getElementById('placeholderContent');
+        
+        if (!placeholderContent || !sectionParam) return;
+        
+        // Find the L2 item and its parent L1 item
+        let l2ItemData = null;
+        let l1ItemData = null;
+        
+        for (const l1Item of menuData) {
+            if (l1Item.subItems) {
+                const foundL2Item = l1Item.subItems.find(subItem => {
+                    const subSectionParam = subItem.href.split('/').pop();
+                    return subSectionParam === sectionParam;
+                });
+                if (foundL2Item) {
+                    l2ItemData = foundL2Item;
+                    l1ItemData = l1Item;
+                    break;
+                }
+            }
+        }
+        
+        if (!l2ItemData || !l1ItemData) {
+            placeholderContent.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <h1>Section Not Found</h1>
+                    <p>The requested section could not be found.</p>
+                    <a href="index - Copy.html" style="color: var(--brand-red); text-decoration: underline;">← Back to Home</a>
+                </div>
+            `;
+            return;
+        }
+        
+        const l1Title = getMenuItemTitle(l1ItemData);
+        const l2Title = getSubItemTitle(l2ItemData);
+        
+        // Update page title
+        document.title = `${l2Title} - ${l1Title} - Prajavani`;
+        
+        // Highlight the correct L1 menu item
+        setTimeout(() => {
+            // First, remove all default highlighting
+            const desktopLinks = document.querySelectorAll('#desktopNavUl a');
+            desktopLinks.forEach(link => {
+                const parentLi = link.closest('li');
+                parentLi.classList.remove('default-highlighted');
+            });
+            
+            const mobileLinks = document.querySelectorAll('#mobileNavUl a');
+            mobileLinks.forEach(link => {
+                link.classList.remove('default-highlighted');
+            });
+            
+            // Then highlight the correct parent section
+            desktopLinks.forEach(link => {
+                const parentLi = link.closest('li');
+                if (link.dataset.itemId === l1ItemData.id) {
+                    parentLi.classList.add('default-highlighted');
+                }
+            });
+            
+            mobileLinks.forEach(link => {
+                if (link.dataset.itemId === l1ItemData.id) {
+                    link.classList.add('default-highlighted');
+                }
+            });
+        }, 100);
+        
+        placeholderContent.innerHTML = `
+            <div style="text-align: center; padding: 2rem 0;">
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <nav style="margin-bottom: 2rem; text-align: left;">
+                        <a href="index - Copy.html" style="color: var(--brand-red); text-decoration: none; font-weight: 500;">Home</a>
+                        <span style="margin: 0 0.5rem; color: var(--neutral-gray);"> › </span>
+                        <a href="l1-placeholder.html.html?section=${l1ItemData.id}" style="color: var(--brand-red); text-decoration: none; font-weight: 500;">${l1Title}</a>
+                        <span style="margin: 0 0.5rem; color: var(--neutral-gray);"> › </span>
+                        <span style="color: var(--brand-dark); font-weight: 600;">${l2Title}</span>
+                    </nav>
+                    
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--brand-red); 
+                               font-family: 'PV Headline', 'Noto Sans', sans-serif;">${l2Title}</h1>
+                    <p style="font-size: 1.2rem; color: var(--neutral-gray); margin-bottom: 2rem; 
+                             font-family: 'PV Text', 'Noto Sans', sans-serif;">Part of ${l1Title} section</p>
+                    
+                    <div style="background-color: var(--neutral-medium); padding: 2rem; border-radius: 12px; 
+                                border: 1px solid var(--light-border); margin-bottom: 2rem;">
+                        <p style="font-size: 1.1rem; color: var(--brand-dark); margin-bottom: 1rem;">This is a placeholder page for the <strong>${l2Title}</strong> subsection.</p>
+                        <p style="color: var(--neutral-gray);">Content for this subsection will be available soon. Please check back later for updates.</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="l1-placeholder.html.html?section=${l1ItemData.id}" 
+                           style="display: inline-block; padding: 0.75rem 1.5rem; background-color: var(--brand-red); 
+                                  color: white; text-decoration: none; border-radius: 6px; font-weight: 600;
+                                  font-family: 'PV Headline', 'Noto Sans', sans-serif; transition: background-color 0.2s ease;"
+                           onmouseover="this.style.backgroundColor='#b71c1c'" 
+                           onmouseout="this.style.backgroundColor='var(--brand-red)'">← Back to ${l1Title}</a>
+                        
+                        <a href="index - Copy.html" 
+                           style="display: inline-block; padding: 0.75rem 1.5rem; background-color: var(--neutral-medium); 
+                                  color: var(--brand-dark); text-decoration: none; border-radius: 6px; font-weight: 600;
+                                  font-family: 'PV Headline', 'Noto Sans', sans-serif; transition: background-color 0.2s ease;
+                                  border: 1px solid var(--light-border);"
+                           onmouseover="this.style.backgroundColor='var(--menu-hover-bg)'" 
+                           onmouseout="this.style.backgroundColor='var(--neutral-medium)'">Home</a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Initialize L2 placeholder content if on placeholder page
+    document.addEventListener('DOMContentLoaded', () => {
+        if (document.getElementById('placeholderContent')) {
+            populateL2PlaceholderContent();
+        }
+    });
     
     // Initialize mobile bottom nav and ad on page load
     document.addEventListener('DOMContentLoaded', () => {
