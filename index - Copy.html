@@ -660,6 +660,10 @@
         font-family: 'PV Text', 'Noto Sans', sans-serif;
     }
     
+    .sticky-follow-header.hide-on-scroll {
+        transform: translateY(-100%);
+    }
+    
     .follow-header-container {
         max-width: var(--container-max-width);
         margin: 0 auto;
@@ -2189,14 +2193,33 @@
             lastScrollY = currentScrollY;
         }, 10);
     }
-    
+    // --- Sticky Follow Header Scroll Handler ---
+    function handleFollowHeaderScroll() {
+        const followHeader = document.getElementById('stickyFollowHeader');
+        if (!followHeader) return;
+
+        const currentScrollY = window.scrollY;
+        const scrollThreshold = 200; // Prevents hiding on small scrolls near the top
+
+        const scrollingDown = currentScrollY > lastScrollY && currentScrollY > scrollThreshold;
+        const scrollingUp = currentScrollY < lastScrollY;
+
+        if (scrollingDown) {
+            followHeader.classList.add('hide-on-scroll');
+        } else if (scrollingUp) {
+            followHeader.classList.remove('hide-on-scroll');
+        }
+    }
+
     // Add scroll event listener with throttling
+        // Add scroll event listener with throttling
     let scrollThrottle = null;
     window.addEventListener('scroll', () => {
         if (scrollThrottle) return;
         scrollThrottle = setTimeout(() => {
             handleMobileScrollDirection();
             handleDesktopScrollDirection();
+            handleFollowHeaderScroll(); // <-- ADD THIS LINE
             scrollThrottle = null;
         }, 16); // ~60fps
     });
