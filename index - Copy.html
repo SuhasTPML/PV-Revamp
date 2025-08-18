@@ -648,19 +648,24 @@
     }
 
     /* --- Sticky Follow Us Header for Articles --- */
-    .sticky-follow-header {
+        /* --- Sticky Follow Us Header for Articles --- */
+    .sticky-follow-wrapper {
         position: sticky;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 998; /* Below main header but above content */
+        top: 0; /* This will be dynamically adjusted by JS */
+        z-index: 998;
+        /* The transition is moved to the wrapper for smooth hiding */
+        transition: transform 0.3s ease; 
+    }
+
+    .sticky-follow-header {
+        /* No longer sticky itself */
         background: var(--neutral-light);
         border-bottom: 1px solid var(--light-border);
-        transition: all 0.3s ease;
         font-family: 'PV Text', 'Noto Sans', sans-serif;
     }
-    
-    .sticky-follow-header.hide-on-scroll {
+
+    /* The hide class is now applied to the wrapper */
+    .sticky-follow-wrapper.hide-on-scroll {
         transform: translateY(-100%);
     }
     
@@ -830,7 +835,7 @@
         }
         
         .article-container {
-            padding: 3rem var(--container-padding-desktop);
+            padding: 0rem var(--container-padding-desktop);
         }
         
         .hero-image-section {
@@ -1170,6 +1175,7 @@
     </section>
 
     <!-- Sticky Follow Us Header for Articles -->
+    <div class="sticky-follow-wrapper" id="stickyFollowWrapper">
     <header class="sticky-follow-header" id="stickyFollowHeader">
         <div class="follow-header-container">
             <div class="follow-us-section">
@@ -1193,7 +1199,7 @@
                 </div>
             </div>
         </div>
-    </header>
+    </header></div>
 
     <!-- Hero Image Section -->
     <section class="hero-image-section">
@@ -2194,23 +2200,22 @@
         }, 10);
     }
     // --- Sticky Follow Header Scroll Handler ---
-    function handleFollowHeaderScroll() {
-        const followHeader = document.getElementById('stickyFollowHeader');
-        if (!followHeader) return;
+function handleFollowHeaderScroll() {
+    const followWrapper = document.getElementById('stickyFollowWrapper'); // Target the wrapper
+    if (!followWrapper) return;
 
-        const currentScrollY = window.scrollY;
-        const scrollThreshold = 200; // Prevents hiding on small scrolls near the top
+    const currentScrollY = window.scrollY;
+    const scrollThreshold = 200; 
 
-        const scrollingDown = currentScrollY > lastScrollY && currentScrollY > scrollThreshold;
-        const scrollingUp = currentScrollY < lastScrollY;
+    const scrollingDown = currentScrollY > lastScrollY && currentScrollY > scrollThreshold;
+    const scrollingUp = currentScrollY < lastScrollY;
 
-        if (scrollingDown) {
-            followHeader.classList.add('hide-on-scroll');
-        } else if (scrollingUp) {
-            followHeader.classList.remove('hide-on-scroll');
-        }
+    if (scrollingDown) {
+        followWrapper.classList.add('hide-on-scroll'); // Add class to the wrapper
+    } else if (scrollingUp) {
+        followWrapper.classList.remove('hide-on-scroll'); // Remove class from the wrapper
     }
-
+}
     // Add scroll event listener with throttling
         // Add scroll event listener with throttling
     let scrollThrottle = null;
@@ -2370,37 +2375,40 @@
     
     // Make the sticky follow header work with existing scroll behavior
     // Update the scroll handlers to account for the new sticky header
-    function updateStickyPositioning() {
+function updateStickyPositioning() {
+    const followWrapper = document.getElementById('stickyFollowWrapper');
+    if (!followWrapper) return;
+
+    let topPosition = 0;
+
+    // Check for desktop/tablet view
+    if (window.innerWidth >= 768) {
         const mainHeader = document.querySelector('.site-header');
         const featuredBar = document.querySelector('.desktop-featured-bar');
-        const followHeader = document.getElementById('stickyFollowHeader');
         
-        if (!followHeader) return;
-        
-        // Calculate the top position based on other sticky elements
-        let topPosition = 0;
-        
-        if (window.innerWidth >= 768) {
-            // Desktop: main header is sticky
-            if (mainHeader) {
-                topPosition += mainHeader.offsetHeight;
-            }
-            
-            // Add featured bar height if it's visible
-            if (featuredBar && !featuredBar.classList.contains('hide-on-scroll')) {
-                topPosition += featuredBar.offsetHeight;
-            }
-        } else {
-            // Mobile: mobile menu bar might be sticky
-            const mobileMenuBar = document.getElementById('mobileMenuBar');
-            if (mobileMenuBar && !mobileMenuBar.classList.contains('hide-on-scroll')) {
-                topPosition += mobileMenuBar.offsetHeight;
-            }
+        // The main header is always sticky on desktop
+        if (mainHeader) {
+            topPosition += mainHeader.offsetHeight;
         }
         
-        followHeader.style.top = topPosition + 'px';
+        // The featured bar is also sticky, but can be hidden on scroll
+        if (featuredBar && !featuredBar.classList.contains('hide-on-scroll')) {
+            topPosition += featuredBar.offsetHeight;
+        }
+    } 
+    // Check for mobile view
+    else {
+        const mobileMenuBar = document.getElementById('mobileMenuBar');
+        // The mobile menu bar is sticky, but can be hidden on scroll
+        if (mobileMenuBar && !mobileMenuBar.classList.contains('hide-on-scroll')) {
+            topPosition += mobileMenuBar.offsetHeight;
+        }
     }
-    
+        // Apply a -1px adjustment only on desktop screens where the gap appears
+    const adjustment = (window.innerWidth >= 992) ? -3 : 0;
+    followWrapper.style.top = (topPosition + adjustment) + 'px';
+}
+
     // Update positioning on scroll and resize
     window.addEventListener('scroll', updateStickyPositioning);
     window.addEventListener('resize', updateStickyPositioning);
