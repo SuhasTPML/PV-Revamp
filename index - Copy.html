@@ -656,7 +656,6 @@
         z-index: 998; /* Below main header but above content */
         background: var(--neutral-light);
         border-bottom: 1px solid var(--light-border);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         font-family: 'PV Text', 'Noto Sans', sans-serif;
     }
@@ -719,17 +718,45 @@
     .follow-social-link.comment:hover { background: #2196f3; color: white; }
     .follow-social-link.share:hover { background: #9c27b0; color: white; }
     
+    /* --- Hero Image Section --- */
+    .hero-image-section {
+        max-width: var(--container-max-width);
+        margin: 0 auto;
+        padding: 1rem var(--container-padding-mobile) 0;
+    }
+    
+    .hero-image-container {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 4px;
+    }
+    
+    .hero-caption {
+        font-size: 0.9rem;
+        color: var(--neutral-gray);
+        line-height: 1.4;
+        margin-top: 0.5rem;
+        font-family: 'PV Text', 'Noto Sans', sans-serif;
+        font-style: italic;
+    }
+    
     /* Article Content Styles */
     .article-container {
         max-width: var(--container-max-width);
         margin: 0 auto;
-        padding: 2rem var(--container-padding-mobile);
+        padding: 0rem var(--container-padding-mobile);
     }
     
     .article-header {
-        margin-bottom: 2rem;
+        margin-bottom: 0rem;
         border-bottom: 1px solid var(--light-border);
-        padding-bottom: 1.5rem;
+        padding-bottom: 0rem;
     }
     
     .article-title {
@@ -800,6 +827,10 @@
         
         .article-container {
             padding: 3rem var(--container-padding-desktop);
+        }
+        
+        .hero-image-section {
+            padding: 1.5rem var(--container-padding-desktop) 0;
         }
         
         .article-title {
@@ -1121,6 +1152,19 @@
         </div>
     </nav>
 
+    <!-- Article Header -->
+    <section class="article-container">
+        <header class="article-header">
+            <h1 class="article-title">ಮೈಸೂರು: ಸಕಾರಿ ಅಂಡರ್ ಬ್ರಿಡ್ಜಿನ ಕೆಳಗೆ ಮಿಲ್ಲ್ ಚಾನಲ್ ವಿಸ್ತರಣೆ</h1>
+            <p class="article-subtitle">ಸಹಾಯಕ ಜಿಲ್ಲಾಧಿಕಾರಿ ಮತ್ತು ಅಧಿಕಾರಿಗಳು ಜೊತೆ ಸ್ಥಾನೀಯ ನಿರೀಕ್ಷೆ ನೆರವೇರಿಸಲು ಮುಂದಾಗಿದ್ದಾರೆ.</p>
+            <div class="article-meta">
+                <span class="date">18 ಆಗಸ್ಟ್ 2025, ಸೋಮವಾರ</span>
+                <span class="author">ಪ್ರಜಾವಾಣಿ ಸಿಬ್ಬಂದಿ</span>
+                <span class="location">ಮೈಸೂರು</span>
+            </div>
+        </header>
+    </section>
+
     <!-- Sticky Follow Us Header for Articles -->
     <header class="sticky-follow-header" id="stickyFollowHeader">
         <div class="follow-header-container">
@@ -1146,6 +1190,14 @@
             </div>
         </div>
     </header>
+
+    <!-- Hero Image Section -->
+    <section class="hero-image-section">
+        <div class="hero-image-container">
+            <img src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D" alt="ಮೈಸೂರು ಸಕಾರಿ ಅಂಡರ್ ಬ್ರಿಡ್ಜ್ ಮತ್ತು ಮಿಲ್ಲ್ ಚಾನಲ್ ವಿಸ್ತರಣೆ ಕಾಮಗಾರಿ" class="hero-image">
+            <p class="hero-caption">ಮೈಸೂರು ಸಕಾರಿ ಅಂಡರ್ ಬ್ರಿಡ್ಜಿನ ಕೆಳಗೆ ಮಿಲ್ಲ್ ಚಾನಲ್ ವಿಸ್ತರಣೆ ಕಾಮಗಾರಿಗೆ ಸಿದ್ಧತೆ ಮಾಡುತ್ತಿರುವ ಅಧಿಕಾರಿಗಳು ಮತ್ತು ಸ್ಥಾನೀಯ ಜನರು.</p>
+        </div>
+    </section>
 
     <div id="overlayMenu" class="overlay-menu-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="overlayMenuTitleLogo">
         <div class="overlay-menu-top-bar">
@@ -1214,16 +1266,6 @@
 
     <main>
         <article class="article-container">
-            <header class="article-header">
-                <h1 class="article-title">ಮೈಸೂರು: ಸಕಾರಿ ಅಂಡರ್ ಬ್ರಿಡ್ಜಿನ ಕೆಳಗೆ ಮಿಲ್ಲ್ ಚಾನಲ್ ವಿಸ್ತರಣೆ</h1>
-                <p class="article-subtitle">ಸಹಾಯಕ ಜಿಲ್ಲಾಧಿಕಾರಿ ಮತ್ತು ಅಧಿಕಾರಿಗಳು ಜೊತೆ ಸ್ಥಾನೀಯ ನಿರೀಕ್ಷೆ ನೆರವೇರಿಸಲು ಮುಂದಾಗಿದ್ದಾರೆ.</p>
-                <div class="article-meta">
-                    <span class="date">18 ಆಗಸ್ಟ್ 2025, ಸೋಮವಾರ</span>
-                    <span class="author">ಪ್ರಜಾವಾಣಿ ಸಿಬ್ಬಂದಿ</span>
-                    <span class="location">ಮೈಸೂರು</span>
-                </div>
-            </header>
-            
             <div class="article-content">
                 <p>ಮೈಸೂರು: ಸಕಾರಿ ಅಂಡರ್ ಬ್ರಿಡ್ಜಿನ ಕೆಳಗೆ ಮಿಲ್ಲ್ ಚಾನಲ್ ವಿಸ್ತರಣೆ ಕಾಮಗಾರಿ ಪ್ರಾರಂಭಿಸಲು ಜಿಲ್ಲಾ ಆಡಳಿತ ಸಿದ್ಧತೆ ಮಾಡಿಕೊಂಡಿದೆ. ನಗರದ ದಕ್ಷಿಣ ಭಾಗದಲ್ಲಿ ಇರುವ ಈ ಪ್ರಮುಖ ಕಾರ್ಯಾಲಯದಿಂದ ಪ್ರತಿದಿನ ಸಾವಿರಾರು ಜನರು ಸೇವೆ ಪಡೆಯುತ್ತಾರೆ. ಈ ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಸಹಾಯಕ ಜಿಲ್ಲಾಧಿಕಾರಿಗಳು ಮತ್ತು ಇತರ ಅಧಿಕಾರಿಗಳು ಕೆಲಸದ ವೇಗವನ್ನು ಹೆಚ್ಚಿಸಲು ನಿರ್ಧರಿಸಿದ್ದಾರೆ.</p>
                 
