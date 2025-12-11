@@ -953,7 +953,6 @@
     let currentlyOpenL1Toggle = null;
     let currentlyOpenL1ItemId = null;
     let isLoggedIn = false; // Track login state
-    let menuClickCounts = {}; // Track click counts for L1 items
 
     const uiStrings = {
         // logoText was removed as logo is now an SVG image
@@ -1307,7 +1306,9 @@
     }
     function initDesktopNavInteractions() {
         const desktopNavLis = document.querySelectorAll('#desktopNavUl > li.has-submenu');
-        
+        let closeTimeout = null;
+        let currentOpenLi = null;
+
         // Close all open menus
         function closeAllMenus() {
             desktopNavLis.forEach(li => {
@@ -1315,81 +1316,74 @@
                 const link = li.querySelector('a');
                 if (link) {
                     link.setAttribute('aria-expanded', 'false');
-                    // Reset click count when closing menu
-                    const itemId = link.dataset.itemId;
-                    if (itemId) menuClickCounts[itemId] = 0;
                 }
             });
+            currentOpenLi = null;
         }
-        
-        // Handle click events on menu items
+
+        // Handle hover and click events on menu items
         desktopNavLis.forEach(li => {
             const link = li.querySelector('a');
             const panel = li.querySelector('.mega-menu-panel');
             if (!link || !panel) return;
-            
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                
-                const itemId = link.dataset.itemId;
-                const isCurrentlyOpen = li.classList.contains('submenu-visible');
-                
-                // Initialize click count if not exists
-                if (!menuClickCounts[itemId]) {
-                    menuClickCounts[itemId] = 0;
+
+            // Mouse enter - open submenu immediately
+            li.addEventListener('mouseenter', () => {
+                // Clear any pending close timeout
+                if (closeTimeout) {
+                    clearTimeout(closeTimeout);
+                    closeTimeout = null;
                 }
-                
+
                 // Check if this item has submenus
                 const hasSubmenus = panel && panel.children.length > 0;
-                
-                if (!hasSubmenus) {
-                    // No submenu, navigate directly
-                    window.location.href = `l1-placeholder.html.html?section=${itemId}`;
-                    return;
-                }
-                
-                menuClickCounts[itemId]++;
-                
-                if (menuClickCounts[itemId] === 1 && !isCurrentlyOpen) {
-                    // First click - show submenu
-                    // Close all other menus first
-                    desktopNavLis.forEach(otherLi => {
-                        if (otherLi !== li && otherLi.classList.contains('submenu-visible')) {
-                            otherLi.classList.remove('submenu-visible');
-                            const otherLink = otherLi.querySelector('a');
-                            if (otherLink) otherLink.setAttribute('aria-expanded', 'false');
-                            // Reset click count for other items
-                            const otherItemId = otherLink.dataset.itemId;
-                            if (otherItemId) menuClickCounts[otherItemId] = 0;
-                        }
-                    });
-                    
+
+                if (hasSubmenus) {
+                    // Close all other menus
+                    closeAllMenus();
+
+                    // Open this menu
                     li.classList.add('submenu-visible');
                     link.setAttribute('aria-expanded', 'true');
-                } else if (menuClickCounts[itemId] >= 2 || isCurrentlyOpen) {
-                    // Second click or already open - navigate to L1 page
-                    window.location.href = `l1-placeholder.html.html?section=${itemId}`;
-                } else {
-                    // Fallback - show submenu
-                    li.classList.add('submenu-visible');
-                    link.setAttribute('aria-expanded', 'true');
+                    currentOpenLi = li;
                 }
             });
+
+            // Mouse leave - close submenu after 200ms delay
+            li.addEventListener('mouseleave', () => {
+                // Set timeout to close after 200ms
+                closeTimeout = setTimeout(() => {
+                    // Close this menu
+                    li.classList.remove('submenu-visible');
+                    link.setAttribute('aria-expanded', 'false');
+                    if (currentOpenLi === li) {
+                        currentOpenLi = null;
+                    }
+                }, 200);
+            });
+
+            // Click - navigate to L1 page
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                const itemId = link.dataset.itemId;
+
+                // Navigate to L1 page
+                window.location.href = `l1-placeholder.html.html?section=${itemId}`;
+            });
         });
-        
+
         // Close menus when clicking outside
         document.addEventListener('click', (event) => {
             if (!desktopNavContainer.contains(event.target)) {
                 closeAllMenus();
             }
         });
-        
+
         // Close menus on ESC key
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 closeAllMenus();
-                // Reset all click counts on ESC
-                menuClickCounts = {};
             }
         });
     }
