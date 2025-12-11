@@ -332,38 +332,72 @@
         padding: 0 var(--container-padding-mobile);
         max-width: var(--container-max-width); margin: 0 auto;
     }
-    .overlay-main-nav > ul > li { 
-        flex-basis: calc(33.333% - 0.34rem); min-width: 180px; 
-        box-sizing: border-box; margin-bottom: 0.5rem; 
+    .overlay-main-nav > ul > li {
+        flex-basis: calc(33.333% - 0.34rem); min-width: 180px;
+        box-sizing: border-box; margin-bottom: 0.5rem;
     }
-    .overlay-main-nav a.submenu-toggle-link {
-        display: flex; flex-direction: column; position: relative;
+
+    /* Menu item wrapper - contains both link and expand button */
+    .menu-item-wrapper {
+        display: flex; align-items: stretch; box-sizing: border-box;
+        background-color: var(--neutral-light); border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06); min-height: 60px;
+        height: 100%; transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .menu-item-wrapper:hover {
+        background-color: #fdfdfd; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .menu-item-wrapper.active {
+        box-shadow: 0 0 0 2px var(--brand-red), 0 2px 5px rgba(0,0,0,0.1);
+        background-color: #fff7f7;
+    }
+
+    /* Main menu link - navigates to L1 page */
+    .menu-item-link {
+        flex: 1; display: flex; flex-direction: column; position: relative;
         padding: 0.6rem 0.5rem; text-decoration: none; color: var(--brand-dark);
-        font-weight: 600; font-size: 0.9rem; background-color: var(--neutral-light);
-        border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-        min-height: 60px; transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        height: 100%; 
+        font-weight: 600; font-size: 0.9rem; box-sizing: border-box;
     }
-    .overlay-main-nav a.submenu-toggle-link:hover { background-color: #fdfdfd; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .overlay-main-nav a.submenu-toggle-link.active-l1 { 
-        box-shadow: 0 0 0 2px var(--brand-red), 0 2px 5px rgba(0,0,0,0.1); background-color: #fff7f7; 
+
+    /* Expand button - toggles submenu */
+    .expand-button {
+        width: 48px; display: flex; align-items: center; justify-content: center;
+        background: transparent; border: none; border-left: 1px solid var(--light-border);
+        cursor: pointer; transition: background-color 0.2s ease; box-sizing: border-box;
+        color: var(--brand-dark); padding: 0;
     }
-    .menu-item-title { 
-        font-size: 0.9rem; 
-        text-transform: uppercase; 
-        letter-spacing: 0.02em; 
-        margin-bottom: 0.2rem; 
+    .expand-button:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+    .expand-button:focus {
+        outline: none;
+    }
+    .expand-button:focus-visible {
+        outline: 2px solid var(--brand-red);
+        outline-offset: -2px;
+    }
+
+    .menu-item-title {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.2rem;
         font-family: 'PV Headline', 'Noto Sans', sans-serif;
         font-weight: 600;
     }
-    .menu-item-tagline { 
-        font-size: 0.75rem; 
-        color: var(--neutral-gray); 
-        line-height: 1.3; 
-        font-weight: normal; 
+    .menu-item-tagline {
+        font-size: 0.75rem;
+        color: var(--neutral-gray);
+        line-height: 1.3;
+        font-weight: normal;
         font-family: 'PV Text', 'Noto Sans', sans-serif;
     }
-    .expand-icon { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: #999; transition: transform 0.2s ease; }
+    .expand-icon {
+        font-size: 0.9rem; color: #999; transition: transform 0.2s ease;
+    }
+    .expand-button.expanded .expand-icon {
+        transform: rotate(180deg);
+    }
     
     .overlay-header-search-container {
         display: none; width: 300px; margin-right: 0.5rem;
@@ -603,10 +637,10 @@
         .mobile-menu-bar { display: none; }
         .overlay-menu-top-bar .main-nav { gap: 0.75rem; } 
         .overlay-menu-search-input-area { padding-left: var(--container-padding-desktop); padding-right: var(--container-padding-desktop); }
-        .overlay-menu-body { padding: 1rem 0; } 
+        .overlay-menu-body { padding: 1rem 0; }
         .overlay-main-nav > ul { padding: 0 var(--container-padding-desktop); gap: 0.75rem 1rem; }
         .overlay-main-nav > ul > li { flex-basis: calc(33.333% - 0.67rem); margin-bottom: 0.5rem;}
-        .overlay-main-nav a.submenu-toggle-link { padding: 0.5rem 0.75rem;}
+        .menu-item-link { padding: 0.5rem 0.75rem;}
         .full-width-l2-content.is-open { padding: 0.5rem var(--container-padding-desktop); margin-top: 0.2rem; }
         .full-width-l2-content .l2-column { flex-basis: calc(33.333% - 0.67rem); min-width: 200px; }
         .content-section, .footer-container { padding: 0 var(--container-padding-desktop); }
@@ -699,12 +733,17 @@
         .overlay-main-nav > ul { flex-direction: column; flex-wrap: nowrap; padding: 0; gap: 0; }
         .overlay-main-nav > ul > li { flex-basis: auto; width: 100%; margin-bottom: 0; border: none; border-bottom: 1px solid #eee; }
         .overlay-main-nav > ul > li:last-child { border-bottom: none; }
-         .overlay-main-nav a.submenu-toggle-link {
+        .menu-item-wrapper {
             border: none; border-radius: 0; min-height: auto;
-            padding: 1rem var(--container-padding-mobile); background-color: transparent; 
-            box-shadow: none;
+            background-color: transparent; box-shadow: none;
         }
-        .overlay-main-nav a.submenu-toggle-link.active-l1 { background-color: var(--menu-hover-bg); box-shadow: none;}
+        .menu-item-wrapper.active { background-color: var(--menu-hover-bg); box-shadow: none;}
+        .menu-item-link {
+            padding: 1rem var(--container-padding-mobile);
+        }
+        .expand-button {
+            border-left: 1px solid #ddd;
+        }
         .full-width-l2-content { margin-top: 0; border-bottom: 1px solid #ffe0e0; }
         .full-width-l2-content.is-open { padding: 0.5rem 0; margin-top:0; }
         .full-width-l2-content .l2-columns-wrapper { flex-direction: column; gap: 0; }
@@ -1413,26 +1452,46 @@
         overlayNavUl.innerHTML = '';
         menuData.forEach(item => {
             const li = document.createElement('li');
-            li.classList.add('has-submenu');
+
+            // Create wrapper div
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('menu-item-wrapper');
+
+            // Create main link (for navigation)
             const mainLink = document.createElement('a');
-            mainLink.href = item.href;
-            mainLink.classList.add('submenu-toggle-link');
-            mainLink.setAttribute('aria-expanded', 'false');
+            mainLink.classList.add('menu-item-link');
+            mainLink.href = `l1-placeholder.html.html?section=${item.id}`;
             mainLink.dataset.itemId = item.id;
+
             const titleSpan = document.createElement('span');
             titleSpan.classList.add('menu-item-title');
             titleSpan.textContent = getMenuItemTitle(item);
             mainLink.appendChild(titleSpan);
+
             const taglineSpan = document.createElement('span');
             taglineSpan.classList.add('menu-item-tagline');
             taglineSpan.textContent = getMenuItemTagline(item);
             mainLink.appendChild(taglineSpan);
+
+            wrapper.appendChild(mainLink);
+
+            // Create expand button (only if has subitems)
             if (item.subItems && item.subItems.length > 0) {
+                li.classList.add('has-submenu');
+                const expandBtn = document.createElement('button');
+                expandBtn.classList.add('expand-button');
+                expandBtn.dataset.itemId = item.id;
+                expandBtn.setAttribute('aria-label', `Expand ${getMenuItemTitle(item)} submenu`);
+                expandBtn.setAttribute('aria-expanded', 'false');
+
                 const icon = document.createElement('i');
                 icon.classList.add('fas', 'fa-chevron-down', 'expand-icon');
-                mainLink.appendChild(icon);
+                expandBtn.appendChild(icon);
+
+                wrapper.appendChild(expandBtn);
             }
-            li.appendChild(mainLink);
+
+            li.appendChild(wrapper);
             overlayNavUl.appendChild(li);
         });
         if (fullWidthL2ContentHolder && fullWidthL2ContentHolder.parentNode !== overlayMenu.querySelector('.overlay-menu-body')) {
@@ -1515,51 +1574,64 @@
     }
 
     function initOverlayMenuInteractions() {
-        const overlayL1Toggles = document.querySelectorAll('#overlayNavUl .submenu-toggle-link');
+        // Handle expand button clicks
+        const expandButtons = document.querySelectorAll('#overlayNavUl .expand-button');
 
-        overlayL1Toggles.forEach(toggle => {
-            const newToggle = toggle.cloneNode(true);
-            if (toggle.parentNode) toggle.parentNode.replaceChild(newToggle, toggle);
+        expandButtons.forEach(button => {
+            const newButton = button.cloneNode(true);
+            if (button.parentNode) button.parentNode.replaceChild(newButton, button);
             else return;
 
-            newToggle.addEventListener('click', function(event) {
+            newButton.addEventListener('click', function(event) {
                 event.preventDefault();
+                event.stopPropagation();
+
                 const clickedL1LiElement = this.closest('li');
+                const wrapper = this.closest('.menu-item-wrapper');
                 const l1ItemId = this.dataset.itemId;
                 const l1ItemData = menuData.find(item => item.id === l1ItemId);
-                const isNoSubmenuItem = !l1ItemData || !l1ItemData.subItems || l1ItemData.subItems.length === 0;
-                const isCurrentlyActive = this.classList.contains('active-l1');
+                const isCurrentlyActive = this.classList.contains('expanded');
 
+                // Close previous menu if different
                 if (currentlyOpenL1Toggle && currentlyOpenL1Toggle !== this) {
-                    currentlyOpenL1Toggle.classList.remove('active-l1');
+                    currentlyOpenL1Toggle.classList.remove('expanded');
                     currentlyOpenL1Toggle.setAttribute('aria-expanded', 'false');
+                    const prevWrapper = currentlyOpenL1Toggle.closest('.menu-item-wrapper');
+                    if (prevWrapper) prevWrapper.classList.remove('active');
                     const prevIcon = currentlyOpenL1Toggle.querySelector('.expand-icon');
                     if (prevIcon) prevIcon.style.transform = 'rotate(0deg)';
                 }
+
+                // Close L2 content if different menu or closing current
                 if (currentlyOpenL1ItemId !== l1ItemId || isCurrentlyActive) {
                     fullWidthL2ContentHolder.classList.remove('is-open');
                     fullWidthL2ContentHolder.style.maxHeight = null;
                 }
 
-                if (isNoSubmenuItem) {
-                    currentlyOpenL1Toggle = null; currentlyOpenL1ItemId = null; return;
-                }
+                // Toggle current menu
                 if (!isCurrentlyActive) {
                     renderL2Content(l1ItemId, clickedL1LiElement);
-                    this.classList.add('active-l1');
+                    this.classList.add('expanded');
                     this.setAttribute('aria-expanded', 'true');
+                    if (wrapper) wrapper.classList.add('active');
                     const icon = this.querySelector('.expand-icon');
                     if (icon) icon.style.transform = 'rotate(180deg)';
-                    currentlyOpenL1Toggle = this; currentlyOpenL1ItemId = l1ItemId;
+                    currentlyOpenL1Toggle = this;
+                    currentlyOpenL1ItemId = l1ItemId;
                 } else {
-                    this.classList.remove('active-l1');
+                    this.classList.remove('expanded');
                     this.setAttribute('aria-expanded', 'false');
+                    if (wrapper) wrapper.classList.remove('active');
                     const icon = this.querySelector('.expand-icon');
                     if (icon) icon.style.transform = 'rotate(0deg)';
-                    currentlyOpenL1Toggle = null; currentlyOpenL1ItemId = null;
+                    currentlyOpenL1Toggle = null;
+                    currentlyOpenL1ItemId = null;
                 }
             });
         });
+
+        // Main menu links will use default navigation (no additional handler needed)
+        // They already have href set to l1-placeholder.html.html?section=${item.id}
     }
 
     function initOverlayTopBarActions() {
