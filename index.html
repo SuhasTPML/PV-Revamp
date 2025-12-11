@@ -1405,9 +1405,9 @@
                 }
             });
 
-            // Mouse leave - close submenu after 500ms delay
+            // Mouse leave - close submenu after 350ms delay
             li.addEventListener('mouseleave', () => {
-                // Set timeout to close after 500ms
+                // Set timeout to close after 350ms
                 closeTimeout = setTimeout(() => {
                     // Close this menu
                     li.classList.remove('submenu-visible');
@@ -1415,7 +1415,7 @@
                     if (currentOpenLi === li) {
                         currentOpenLi = null;
                     }
-                }, 500);
+                }, 350);
             });
 
             // Click - navigate to L1 page
